@@ -35,14 +35,14 @@ class _DrawerPageState extends State<DrawerPage> {
                 height: 140.0,
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  color: Color.fromARGB(255, 12, 77, 131),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black,
-                      blurRadius: 4.0,
-                      spreadRadius: 4.0,
-                    ),
-                  ],
+                  color: Color.fromARGB(255, 30, 76, 106),
+                  // boxShadow: [
+                  //   BoxShadow(
+                  //     color: Colors.black,
+                  //     blurRadius: 4.0,
+                  //     spreadRadius: 4.0,
+                  //   ),
+                  // ],
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,

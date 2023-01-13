@@ -56,6 +56,7 @@ class MyApp extends StatelessWidget {
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
         primarySwatch: Colors.lightBlue,
+        appBarTheme: AppBarTheme(color:Color.fromARGB(255, 30, 76, 106))
         // scaffoldBackgroundColor: Color.fromARGB(255, 30, 76, 106),
         // useMaterial3: true,
         

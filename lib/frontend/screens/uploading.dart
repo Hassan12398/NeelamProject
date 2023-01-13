@@ -2,10 +2,15 @@
 
 import 'dart:typed_data';
 
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:lottie/lottie.dart';
 import 'package:nelaamproject/backend/auth/postingproduct.dart';
 import 'package:nelaamproject/frontend/screens/selling.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../backend/imagedata.dart';
 
@@ -45,7 +50,23 @@ class _UploadingPageState extends State<UploadingPage> {
     setState(() {
       _image = img;
     });
-  }
+  } 
+  UploadTask? task;
+  Future<String> uploadImage(Uint8List image) async {
+    var uuid = Uuid();
+    var id = uuid.v1();
+    // folder name & iamge name
+    Reference ref = await FirebaseStorage.instance
+        .ref()
+        .child('ProductImages')
+        .child('${id}.jpg');
+    // image is uploading from putData()
+    task = ref.putData(image);
+    TaskSnapshot taskSnapshot = await task!;
+    String downloadUrl = await taskSnapshot.ref.getDownloadURL();
+    return downloadUrl;
+  } 
+  bool uploading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -97,6 +118,7 @@ class _UploadingPageState extends State<UploadingPage> {
                             decoration: BoxDecoration(
                               image: DecorationImage(
                                 image: MemoryImage(_image!),
+                                fit: BoxFit.fill
                               ),
                               color: Colors.white,
                               border: Border.all(
@@ -182,6 +204,11 @@ class _UploadingPageState extends State<UploadingPage> {
               SizedBox(height: 12.0),
               TextField(
                 controller: price,
+                keyboardType: TextInputType.number,
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                  FilteringTextInputFormatter.digitsOnly,
+                ],
                 decoration: InputDecoration(
                   errorText: eprice ? "Please Enter Product Price" : null,
                   border: OutlineInputBorder(
@@ -200,6 +227,11 @@ class _UploadingPageState extends State<UploadingPage> {
               SizedBox(height: 12.0),
               TextField(
                 controller: bid,
+                keyboardType: TextInputType.number,
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                  FilteringTextInputFormatter.digitsOnly,
+                ],
                 decoration: InputDecoration(
                   errorText: ebid ? "Please Enter Product Bid" : null,
                   border: OutlineInputBorder(
@@ -258,7 +290,7 @@ class _UploadingPageState extends State<UploadingPage> {
                   ),
                 ),
               ),
-              Padding(
+             uploading?_buildSendFileStatus(task!): Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Center(
                   child: InkWell(
@@ -356,16 +388,42 @@ class _UploadingPageState extends State<UploadingPage> {
                           ename = false;
                           edetails = false;
                           eprice = false;
+                          // uploading=true;
                           ebid = false;
                         });
+                        showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (context) {
+                                return AlertDialog(
+                                  content: Container(
+                                    height: 180,
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                     LottieBuilder.asset('images/upload.json',
+                                     height: 100,
+                                     ),
+                                     SizedBox(height: 5,),
+                                     _buildSendFileStatus(task!),
+                                    ])
+                                  )
+                                );
+                              });
+                        String imageUrl = await uploadImage(_image!);
                         await prodcutUpload(
                           name.text,
                           details.text,
                           price.text,
                           bid.text,
                           valuechanges!,
-                          _image!,
+                          imageUrl,
                         );
+                        Get.back();
+                        // setState(() {
+                        //   uploading = false;
+                        // });
                       }
                     },
                     child: Container(
@@ -396,4 +454,43 @@ class _UploadingPageState extends State<UploadingPage> {
       ),
     );
   }
+   Widget _buildSendFileStatus(UploadTask task) => StreamBuilder<TaskSnapshot>(
+        stream: task.snapshotEvents,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            final snap = snapshot.data!;
+            final progress = snap.bytesTransferred / snap.totalBytes;
+            final percentage = (progress * 100).toStringAsFixed(2);
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0),
+                  child: Container(
+                    height: 10,
+                    decoration: BoxDecoration(
+                        color: Colors.transparent,
+                        borderRadius: BorderRadius.circular(10)),
+                    width: 188,
+                    child: LinearProgressIndicator(
+                      color: Colors.blue,
+                      value: progress,
+                    ),
+                  ),
+                ),
+                SizedBox(width: 5,),
+                Text(
+                  '$percentage%',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ],
+            );
+          } else {
+            return Container(
+                color: Colors.transparent,
+                height: 10,
+                child: LinearProgressIndicator());
+          }
+        },
+      );
 }
