@@ -426,7 +426,10 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                   ),
                   InkWell(
                     onTap: () {
-                      Get.to(bid_screen(),transition: Transition.rightToLeft);
+                      Get.to(bid_screen(
+                        minBid: int.parse(widget.bid),
+                        price: int.parse(widget.price),
+                      ),transition: Transition.rightToLeft);
                     },
                     child: Container(
                       height: 40.0,

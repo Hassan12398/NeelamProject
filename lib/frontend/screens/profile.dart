@@ -1,6 +1,12 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_unnecessary_containers
 
+import 'dart:typed_data';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:nelaamproject/backend/imagedata.dart';
 
 class PProfilePage extends StatefulWidget {
   const PProfilePage({super.key});
@@ -11,13 +17,60 @@ class PProfilePage extends StatefulWidget {
 
 class _PProfilePageState extends State<PProfilePage> {
   bool editmod = true;
+  var usermail = FirebaseAuth.instance.currentUser!.email;
+  TextEditingController name = TextEditingController();
+  TextEditingController currentemail = TextEditingController();
+  // getting userdata
+  var uid = FirebaseAuth.instance.currentUser!.uid;
+  String username = "";
+  String nameerror = "";
+  String emailerror = "";
+  String profilelink = "";
+  Uint8List? _image;
+
+  ///////////////////////
+  void selectImage() async {
+    Uint8List img = await pickImage(ImageSource.gallery);
+    setState(() {
+      _image = img;
+    });
+  }
+
+  var userdata = {};
+  @override
+  void initState() {
+    getUserData();
+    super.initState();
+  }
+  bool isLoading = false;
+  Future getUserData() async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      var usersD =
+          await FirebaseFirestore.instance.collection("users").doc(uid).get();
+      userdata = usersD.data()!;
+      setState(() {
+        username = userdata["username"];
+        profilelink = userdata["profileUrl"];
+      });
+    } catch (e) {
+      print(e);
+    }
+     setState(() {
+      isLoading = false;
+    });
+  }
+
+  // ending
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       // appbar
       appBar: AppBar(
-        backgroundColor:Color.fromARGB(255, 30, 76, 106),
+        backgroundColor: Color.fromARGB(255, 30, 76, 106),
         centerTitle: true,
         automaticallyImplyLeading: false,
         // elevation: 0.0,
@@ -37,7 +90,55 @@ class _PProfilePageState extends State<PProfilePage> {
             },
             child: editmod
                 ? Icon(Icons.edit, color: Colors.white)
-                : Icon(Icons.check, color: Colors.white),
+                : InkWell(
+                    onTap: () async {
+                      if (name.text.isEmpty && currentemail.text.isEmpty) {
+                        setState(() {
+                          nameerror = "Please Enter Name";
+                          emailerror = "Please Enter Email";
+                        });
+                      } else if (name.text.isNotEmpty &&
+                          currentemail.text != usermail &&
+                          _image == null) {
+                        setState(() {
+                          nameerror = "";
+                          emailerror = "Please Enter Correct E-mail";
+                        });
+                      } else if (name.text.isEmpty &&
+                          currentemail.text == usermail &&
+                          _image == null) {
+                        setState(() {
+                          nameerror = "";
+                          emailerror = "";
+                        });
+                      } else if (name.text.isEmpty &&
+                          currentemail.text == usermail &&
+                          _image != null) {
+                        setState(() {
+                          nameerror = "";
+                          emailerror = "";
+                        });
+                      } else if (name.text.isNotEmpty &&
+                          currentemail.text == usermail &&
+                          _image != null) {
+                        setState(() {
+                          nameerror = "";
+                          emailerror = "";
+                          editmod = true;
+                        });
+                        // String imageUrl =
+                        //     await UserImageUpload().uploadImage(_image!);
+                        await FirebaseFirestore.instance
+                            .collection("users")
+                            .doc(uid)
+                            .update({
+                          "username": name.text,
+                          "profileUrl": "imageUrl",
+                        });
+                      }
+                    },
+                    child: Icon(Icons.check, color: Colors.white),
+                  ),
           ),
           SizedBox(width: 20.0),
         ],
@@ -52,7 +153,7 @@ class _PProfilePageState extends State<PProfilePage> {
                     height: MediaQuery.of(context).size.height,
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      color:Color.fromARGB(255, 30, 76, 106),
+                      color: Color.fromARGB(255, 30, 76, 106),
                       // borderRadius: BorderRadius.only(
                       //   topLeft: Radius.circular(60.0),
                       //   topRight: Radius.circular(60.0),
@@ -60,15 +161,17 @@ class _PProfilePageState extends State<PProfilePage> {
                     ),
                     child: Column(
                       children: [
-                        SizedBox(height: 20,),
-                      CircleAvatar(
-                        backgroundColor: Colors.white,
-                        backgroundImage: NetworkImage('https://th.bing.com/th/id/R.005bb6d69349a65c9f29d3d936fa9c77?rik=MX%2brNFZsyUoY0Q&pid=ImgRaw&r=0'),
-                        radius: 60,
-                      ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        CircleAvatar(
+                          backgroundColor: Colors.white,
+                          backgroundImage: NetworkImage(profilelink),
+                          radius: 60,
+                        ),
                         // name
                         Text(
-                          "Hassan Butt",
+                          username,
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.w600,
@@ -77,7 +180,7 @@ class _PProfilePageState extends State<PProfilePage> {
                         ),
                         // username
                         Text(
-                          "hassanbutt",
+                          "$usermail",
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.w600,
@@ -89,7 +192,7 @@ class _PProfilePageState extends State<PProfilePage> {
                           height: 30.0,
                           width: 210.0,
                           decoration: BoxDecoration(
-                            color: Color.fromARGB(255, 12, 77, 131),
+                            color: Color.fromARGB(255, 30, 76, 106),
                             boxShadow: [
                               BoxShadow(
                                 color: Colors.black54,
@@ -140,10 +243,6 @@ class _PProfilePageState extends State<PProfilePage> {
                     ),
                   ),
                 ],
-                //////////////////////////////////////////////////
-                /////////////////////////////////////////////////////
-                /////////////////////////////////////////////////////
-                /////////////////////////////////////////////////////
               )
             : Column(
                 children: [
@@ -160,27 +259,50 @@ class _PProfilePageState extends State<PProfilePage> {
                     ),
                     child: Column(
                       children: [
-                         SizedBox(height: 50.0),
-                         CircleAvatar(
-                        backgroundColor: Colors.white,
-                        backgroundImage: NetworkImage('https://th.bing.com/th/id/R.005bb6d69349a65c9f29d3d936fa9c77?rik=MX%2brNFZsyUoY0Q&pid=ImgRaw&r=0'),
-                        radius: 60,
-                      ),
+                        SizedBox(height: 50.0),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            _image == null
+                                ? CircleAvatar(
+                                    backgroundColor: Colors.white,
+                                    backgroundImage: NetworkImage(
+                                        'https://th.bing.com/th/id/R.005bb6d69349a65c9f29d3d936fa9c77?rik=MX%2brNFZsyUoY0Q&pid=ImgRaw&r=0'),
+                                    radius: 60,
+                                  )
+                                : CircleAvatar(
+                                    backgroundColor: Colors.white,
+                                    backgroundImage: MemoryImage(_image!),
+                                    radius: 60,
+                                  ),
+                            SizedBox(width: 8.0),
+                            IconButton(
+                              onPressed: () {
+                                selectImage();
+                              },
+                              icon: Icon(
+                                Icons.camera_alt,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 12.0),
                         // name
                         Text(
-                          "Hassan Butt",
+                          username,
                           style: TextStyle(
-                            color: Colors.white, 
+                            color: Colors.white,
                             fontWeight: FontWeight.w600,
                             fontSize: 24.0,
                           ),
                         ),
                         SizedBox(height: 30.0),
                         Container(
-                          height: 220.0,
+                          height: 250.0,
                           width: double.infinity,
                           decoration: BoxDecoration(
-                            color: Color.fromARGB(255, 12, 77, 131),
+                            color: Color.fromARGB(255, 30, 76, 106),
                             boxShadow: [
                               BoxShadow(
                                 color: Colors.black54,
@@ -191,7 +313,6 @@ class _PProfilePageState extends State<PProfilePage> {
                           ),
                           child: Column(
                             children: [
-                              
                               SizedBox(height: 8.0),
                               Text(
                                 "Change Name:",
@@ -217,6 +338,7 @@ class _PProfilePageState extends State<PProfilePage> {
                                     height: 40.0,
                                     width: 250.0,
                                     child: TextField(
+                                      controller: name,
                                       decoration: InputDecoration(
                                         isDense: true,
                                         filled: true,
@@ -228,10 +350,18 @@ class _PProfilePageState extends State<PProfilePage> {
                                       ),
                                     ),
                                   ),
+                                  SizedBox(height: 8.0),
+                                  Text(
+                                    nameerror,
+                                    style: TextStyle(
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                   // email
                                   SizedBox(height: 12.0),
                                   Text(
-                                    "E-MAIN ADDRESS",
+                                    "E-MAIl ADDRESS",
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,
@@ -242,6 +372,7 @@ class _PProfilePageState extends State<PProfilePage> {
                                     height: 40.0,
                                     width: 250.0,
                                     child: TextField(
+                                      controller: currentemail,
                                       decoration: InputDecoration(
                                         isDense: true,
                                         filled: true,
@@ -251,6 +382,14 @@ class _PProfilePageState extends State<PProfilePage> {
                                         ),
                                         fillColor: Colors.white,
                                       ),
+                                    ),
+                                  ),
+                                  SizedBox(height: 8.0),
+                                  Text(
+                                    emailerror,
+                                    style: TextStyle(
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                 ],

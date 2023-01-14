@@ -195,7 +195,7 @@ class _UploadingPageState extends State<UploadingPage> {
               ),
               SizedBox(height: 12.0),
               Text(
-                "Price:",
+                "Product Price:",
                 style: TextStyle(
                   fontSize: 18.0,
                   fontWeight: FontWeight.w500,
