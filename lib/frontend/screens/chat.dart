@@ -36,7 +36,7 @@ class _chatPageState extends State<chatPage> {
             child: TextField(
               decoration: InputDecoration(
                 isDense: true,
-                fillColor: Color.fromARGB(255, 229, 218, 125),
+                fillColor: Color.fromARGB(255, 229, 223, 126),
                 filled: true,
                 hintText: 'Search',
                 hintStyle: TextStyle(

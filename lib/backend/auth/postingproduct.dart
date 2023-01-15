@@ -29,7 +29,13 @@ Future prodcutUpload(
       "rating":0,
       "reviews":[],
     });
+    List postId = [];
+    postId.add(id);
+    await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).update({
+      "posts":FieldValue.arrayUnion(postId),
+    });
   } catch (e) {
     print(e);
   }
 }
+

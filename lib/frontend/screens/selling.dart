@@ -200,6 +200,7 @@ class _SellingPageState extends State<SellingPage> {
                                 transitionType: ContainerTransitionType.fade,
                                 openBuilder: (_, __) {
                                   return ItemDetailsPage(
+                                    bidL: snap['bids'],
                                     name: snap['Product Name'],
                                     uid: snap['uid'],
                                     bidlength: bid,

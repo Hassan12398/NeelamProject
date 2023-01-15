@@ -117,7 +117,7 @@ class _MainBottomBarState extends State<MainBottomBar> {
              activeColor:  Color.fromARGB(255, 54, 188, 208),
           ),
           BottomNavyBarItem(
-            icon: Icon(CupertinoIcons.hammer_fill),
+            icon: Icon(Icons.gavel_sharp),
             title: Text('Bids'),
              activeColor:  Color.fromARGB(255, 202, 39, 39),
           ),

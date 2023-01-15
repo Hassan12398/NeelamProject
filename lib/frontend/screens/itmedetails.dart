@@ -1,12 +1,14 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_unnecessary_containers
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
 import 'package:nelaamproject/frontend/bid/bid_screen.dart';
+import 'package:nelaamproject/widgets/snackbar.dart';
 
 import 'cart.dart';
 
@@ -21,6 +23,7 @@ class ItemDetailsPage extends StatefulWidget {
   int bidlength;
   int rating;
   int reviews;
+  List bidL;
   ItemDetailsPage({
     super.key,
     required this.bid,
@@ -30,6 +33,7 @@ class ItemDetailsPage extends StatefulWidget {
     required this.details,
     required this.bidlength,
     required this.postId,
+    required this.bidL,
     required this.rating,
     required this.reviews,
     required this.uid,
@@ -47,11 +51,11 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
     getData();
     super.initState();
   }
+
   var userData = {};
   getData() async {
-   setState(() {
-      isLoading = true
-      ;
+    setState(() {
+      isLoading = true;
     });
     try {
       var Usersnap = await FirebaseFirestore.instance
@@ -271,13 +275,13 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                     ),
                     // SizedBox(height: 4,),
                     Padding(
-                      padding:
-                          const EdgeInsets.symmetric(vertical: 8, horizontal: 14),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 8, horizontal: 14),
                       child: Text(
                         widget.details.length < 250
                             ? widget.details
-                            : widget.details
-                                .replaceRange(247, widget.details.length, '...'),
+                            : widget.details.replaceRange(
+                                247, widget.details.length, '...'),
                         textAlign: TextAlign.start,
                         style: TextStyle(
                           fontSize: 17,
@@ -295,55 +299,93 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                       ),
                       // trailing: Icon(Icons.arrow_forward_ios,size: 19,),
                     ),
-                   widget.bidlength==0?Container(
-                     color: Color.fromARGB(255, 233, 232, 232),
-                     height: 80,
-                     width: double.infinity,
-                     child: Center(
-                       child: Text('There is No bid on this Product',style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.bold,
-                       ),),
-                     ),
-                   ): ListView.builder(
-                      itemCount: 0,
-                      shrinkWrap: true,
-                      itemBuilder: (context,index) {
-                        return Container(
-                          color: Color.fromARGB(255, 233, 232, 232),
-                          child: ListTile(
-                            leading: CircleAvatar(
-                              backgroundColor: Colors.red,
-                              radius: 17,
-                            ),
-                            // tileColor: Colors.red,
-                            title: Text(
-                              'Hassan',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w500,
+                    widget.bidlength == 0
+                        ? Container(
+                            color: Color.fromARGB(255, 233, 232, 232),
+                            height: 80,
+                            width: double.infinity,
+                            child: Center(
+                              child: Text(
+                                'There is No bid on this Product',
+                                style: TextStyle(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
-                            trailing: Text(
-                              '7000 Rs',
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                          ),
-                        );
-                      }
-                    ),
-                  widget.bidlength<3?Container():  Container(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          TextButton(onPressed: (){}, child: Text('View more >>')),
-                        ],
-                      ),
-                    ),
-                     ListTile(
+                          )
+                        : StreamBuilder(
+                            stream: FirebaseFirestore.instance
+                                .collection('Products')
+                                .doc(widget.postId)
+                                .collection('bids')
+                                .orderBy('bid price', descending: true)
+                                .snapshots(),
+                            builder: (context,
+                                AsyncSnapshot<
+                                        QuerySnapshot<Map<String, dynamic>>>
+                                    snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return Container(
+                                  color: Color.fromARGB(255, 233, 232, 232),
+                                  height: 80,
+                                  width: double.infinity,
+                                  child: Center(
+                                      child: CircularProgressIndicator()),
+                                );
+                              }
+                              return ListView.builder(
+                                  itemCount: snapshot.data!.docs.length > 3
+                                      ? 3
+                                      : snapshot.data!.docs.length,
+                                  shrinkWrap: true,
+                                  itemBuilder: (context, index) {
+                                    var snap =
+                                        snapshot.data!.docs[index].data();
+                                    return Container(
+                                      color: Color.fromARGB(255, 233, 232, 232),
+                                      child: ListTile(
+                                        leading: CircleAvatar(
+                                          backgroundColor: Colors.transparent,
+                                          backgroundImage:
+                                              NetworkImage(snap['imageUrl']),
+                                          radius: 17,
+                                        ),
+                                        // tileColor: Colors.red,
+                                        title: Text(
+                                          snap['username'],
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                        trailing: Text(
+                                          '${snap['bid price']} Rs',
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  });
+                            }),
+                    widget.uid == FirebaseAuth.instance.currentUser!.uid
+                        ? widget.bidlength <= 3
+                            ? Container()
+                            : Container(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    TextButton(
+                                        onPressed: () {},
+                                        child: Text('View more >>')),
+                                  ],
+                                ),
+                              )
+                        : Container(),
+                    ListTile(
                       leading: Text(
                         'Seller Profile',
                         style: TextStyle(
@@ -354,41 +396,45 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                       // trailing: Icon(Icons.arrow_forward_ios,size: 19,),
                     ),
                     Container(
-                          color: Color.fromARGB(255, 233, 232, 232),
-                          child: ListTile(
-                            leading:isLoading?CircleAvatar(
-                              backgroundColor: Colors.transparent,
-                              backgroundImage: NetworkImage('https://irisvision.com/wp-content/uploads/2019/01/no-profile-1-1200x1200.png'),
-                              radius: 23,
-                            ): CircleAvatar(
-                              backgroundColor: Colors.transparent,
-                              backgroundImage: NetworkImage(userData['profileUrl']),
-                              radius: 23,
+                      color: Color.fromARGB(255, 233, 232, 232),
+                      child: ListTile(
+                          leading: isLoading
+                              ? CircleAvatar(
+                                  backgroundColor: Colors.transparent,
+                                  backgroundImage: NetworkImage(
+                                      'https://irisvision.com/wp-content/uploads/2019/01/no-profile-1-1200x1200.png'),
+                                  radius: 23,
+                                )
+                              : CircleAvatar(
+                                  backgroundColor: Colors.transparent,
+                                  backgroundImage:
+                                      NetworkImage(userData['profileUrl']),
+                                  radius: 23,
+                                ),
+                          // tileColor: Colors.red,
+                          title: Text(
+                            isLoading
+                                ? 'Loading...'
+                                : userData['username'].toString().length < 10
+                                    ? userData['username'].toString()
+                                    : userData['username']
+                                        .toString()
+                                        .replaceRange(
+                                            10,
+                                            userData['username']
+                                                .toString()
+                                                .length,
+                                            '...'),
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500,
                             ),
-                            // tileColor: Colors.red,
-                            title: Text(
-                             isLoading? 'Loading...':userData['username']
-                                                              .toString()
-                                                              .length <
-                                                          10
-                                                      ? userData['username']
-                                                          .toString()
-                                                      : userData['username']
-                                                          .toString()
-                                                          .replaceRange(
-                                                              10,
-                                                              userData['username']
-                                                                  .toString()
-                                                                  .length,
-                                                              '...'),
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            trailing: Icon(Icons.arrow_forward_ios,size: 19,)
                           ),
-                        ),
+                          trailing: Icon(
+                            Icons.arrow_forward_ios,
+                            size: 19,
+                          )),
+                    ),
                   ],
                 ),
               ),
@@ -426,10 +472,25 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                   ),
                   InkWell(
                     onTap: () {
-                      Get.to(bid_screen(
-                        minBid: int.parse(widget.bid),
-                        price: int.parse(widget.price),
-                      ),transition: Transition.rightToLeft);
+                      if (widget.uid ==
+                          FirebaseAuth.instance.currentUser!.uid) {
+                        Showsnackbar(context,
+                            'You\'re a seller you cannot bid on this product');
+                      } else {
+                        if (widget.bidL
+                            .contains(FirebaseAuth.instance.currentUser!.uid)) {
+                          Showsnackbar(
+                              context, 'You already bid on this product');
+                        } else {
+                          Get.to(
+                              bid_screen(
+                                postId: widget.postId,
+                                minBid: int.parse(widget.bid),
+                                price: int.parse(widget.price),
+                              ),
+                              transition: Transition.rightToLeft);
+                        }
+                      }
                     },
                     child: Container(
                       height: 40.0,
