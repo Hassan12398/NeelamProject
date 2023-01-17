@@ -45,10 +45,10 @@ dependencies:
   animations: ^2.0.7
   get:
   google_sign_in: ^5.4.2
-  image_picker: ^0.8.6
   uuid: ^3.0.7
   flutter_rating_bar: ^4.0.1
   lottie:
+  file_picker: ^5.2.5
 dev_dependencies:
   flutter_test:
     sdk: flutter

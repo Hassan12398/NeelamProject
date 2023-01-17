@@ -1,12 +1,19 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_unnecessary_containers
 
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
+
 import 'package:nelaamproject/backend/imagedata.dart';
+import 'package:uuid/uuid.dart';
 
 class PProfilePage extends StatefulWidget {
   const PProfilePage({super.key});
@@ -26,22 +33,22 @@ class _PProfilePageState extends State<PProfilePage> {
   String nameerror = "";
   String emailerror = "";
   String profilelink = "";
-  Uint8List? _image;
+  // Uint8List? _image;
 
   ///////////////////////
+  PlatformFile? file;
   void selectImage() async {
-    Uint8List img = await pickImage(ImageSource.gallery);
-    setState(() {
-      _image = img;
-    });
+    
   }
 
   var userdata = {};
   @override
   void initState() {
     getUserData();
+    load();
     super.initState();
   }
+
   bool isLoading = false;
   Future getUserData() async {
     setState(() {
@@ -58,353 +65,462 @@ class _PProfilePageState extends State<PProfilePage> {
     } catch (e) {
       print(e);
     }
-     setState(() {
+    setState(() {
       isLoading = false;
     });
   }
-
+  UploadTask? task;
+  Future<String> uploadImage(File image) async {
+    var uuid = Uuid();
+    var id = uuid.v1();
+    // folder name & iamge name
+    Reference ref = await FirebaseStorage.instance
+        .ref()
+        .child('profileImages')
+        .child('${id}.jpg');
+    // image is uploading from putData()
+    task = ref.putFile(image);
+    TaskSnapshot taskSnapshot = await task!;
+    String downloadUrl = await taskSnapshot.ref.getDownloadURL();
+    return downloadUrl;
+  } 
+  bool loading = true;
+  Future load()async{
+    await Future.delayed(Duration(seconds: 3));
+    setState(() {
+      loading=false;
+    });
+  }
   // ending
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      // appbar
-      appBar: AppBar(
-        backgroundColor: Color.fromARGB(255, 30, 76, 106),
-        centerTitle: true,
-        automaticallyImplyLeading: false,
-        // elevation: 0.0,
-        title: Text(
-          "Profile",
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        actions: [
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                editmod = !editmod;
-              });
-            },
-            child: editmod
-                ? Icon(Icons.edit, color: Colors.white)
-                : InkWell(
-                    onTap: () async {
-                      if (name.text.isEmpty && currentemail.text.isEmpty) {
-                        setState(() {
-                          nameerror = "Please Enter Name";
-                          emailerror = "Please Enter Email";
-                        });
-                      } else if (name.text.isNotEmpty &&
-                          currentemail.text != usermail &&
-                          _image == null) {
-                        setState(() {
-                          nameerror = "";
-                          emailerror = "Please Enter Correct E-mail";
-                        });
-                      } else if (name.text.isEmpty &&
-                          currentemail.text == usermail &&
-                          _image == null) {
-                        setState(() {
-                          nameerror = "";
-                          emailerror = "";
-                        });
-                      } else if (name.text.isEmpty &&
-                          currentemail.text == usermail &&
-                          _image != null) {
-                        setState(() {
-                          nameerror = "";
-                          emailerror = "";
-                        });
-                      } else if (name.text.isNotEmpty &&
-                          currentemail.text == usermail &&
-                          _image != null) {
-                        setState(() {
-                          nameerror = "";
-                          emailerror = "";
-                          editmod = true;
-                        });
-                        // String imageUrl =
-                        //     await UserImageUpload().uploadImage(_image!);
-                        await FirebaseFirestore.instance
-                            .collection("users")
-                            .doc(uid)
-                            .update({
-                          "username": name.text,
-                          "profileUrl": "imageUrl",
-                        });
-                      }
-                    },
-                    child: Icon(Icons.check, color: Colors.white),
-                  ),
-          ),
-          SizedBox(width: 20.0),
-        ],
-      ),
-      // end
-      body: SingleChildScrollView(
-        child: editmod
-            ? Column(
-                children: [
-                  // SizedBox(height: 100.0),
-                  Container(
-                    height: MediaQuery.of(context).size.height,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Color.fromARGB(255, 30, 76, 106),
-                      // borderRadius: BorderRadius.only(
-                      //   topLeft: Radius.circular(60.0),
-                      //   topRight: Radius.circular(60.0),
-                      // ),
-                    ),
-                    child: Column(
-                      children: [
-                        SizedBox(
-                          height: 20,
-                        ),
-                        CircleAvatar(
-                          backgroundColor: Colors.white,
-                          backgroundImage: NetworkImage(profilelink),
-                          radius: 60,
-                        ),
-                        // name
-                        Text(
-                          username,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 24.0,
-                          ),
-                        ),
-                        // username
-                        Text(
-                          "$usermail",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        SizedBox(height: 20.0),
-                        // rating
-                        Container(
-                          height: 30.0,
-                          width: 210.0,
-                          decoration: BoxDecoration(
-                            color: Color.fromARGB(255, 30, 76, 106),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black54,
-                                blurRadius: 4.0,
-                                spreadRadius: 2.0,
-                              ),
-                            ],
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Text(
-                                "Rating:",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                              SizedBox(
-                                height: 30.0,
-                                width: 150.0,
-                                child: Slider(
-                                  value: 5.0,
-                                  min: 2.0,
-                                  max: 10.0,
-                                  onChanged: (a) {},
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: 40.0),
-                        // response
-                        ProfileConst(
-                          res: "Positive",
-                          getcolor: Colors.green,
-                        ),
-                        ProfileConst(
-                          res: "Neutral",
-                          getcolor: Colors.blue,
-                        ),
-                        ProfileConst(
-                          res: "Negative",
-                          getcolor: Colors.red,
-                        ),
-                        // end
-                      ],
-                    ),
-                  ),
-                ],
-              )
-            : Column(
-                children: [
-                  // SizedBox(height: 100.0),
-                  Container(
-                    height: MediaQuery.of(context).size.height,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Color.fromARGB(255, 30, 76, 106),
-                      // borderRadius: BorderRadius.only(
-                      //   topLeft: Radius.circular(60.0),
-                      //   topRight: Radius.circular(60.0),
-                      // ),
-                    ),
-                    child: Column(
-                      children: [
-                        SizedBox(height: 50.0),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            _image == null
-                                ? CircleAvatar(
-                                    backgroundColor: Colors.white,
-                                    backgroundImage: NetworkImage(
-                                        'https://th.bing.com/th/id/R.005bb6d69349a65c9f29d3d936fa9c77?rik=MX%2brNFZsyUoY0Q&pid=ImgRaw&r=0'),
-                                    radius: 60,
+    return loading
+        ? Scaffold(
+            body: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children:[
+              Center(child:isLoading? CircularProgressIndicator():CircularProgressIndicator())
+            ],
+          ))
+        : Scaffold(
+            backgroundColor: Colors.white,
+            // appbar
+            
+            appBar: AppBar(
+              leading: editmod?Container():IconButton(onPressed: () {
+                    setState(() {
+                      editmod = !editmod;
+                    });
+                  }, icon: Icon(Icons.close)),
+              backgroundColor: Color.fromARGB(255, 30, 76, 106),
+              centerTitle: true,
+              automaticallyImplyLeading: false,
+              // elevation: 0.0,
+              title: Text(
+                "Profile",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              actions: [
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      editmod = !editmod;
+                    });
+                  },
+                  child: editmod
+                      ? Icon(Icons.edit, color: Colors.white)
+                      : InkWell(
+                          onTap: () async {
+                            if (name.text.isEmpty &&
+                                currentemail.text.isEmpty) {
+                              setState(() {
+                                nameerror = "Please Enter Name";
+                                emailerror = "Please Enter Email";
+                              });
+                            } else if (name.text.isNotEmpty &&
+                                currentemail.text != usermail &&
+                                file == null) {
+                              setState(() {
+                                nameerror = "";
+                                emailerror = "Please Enter Correct E-mail";
+                              });
+                            } else if (name.text.isEmpty &&
+                                currentemail.text == usermail
+                                ) {
+                              setState(() {
+                                nameerror = "Please Enter Name";
+                                emailerror = "";
+                              });
+                            } else if (name.text.isEmpty &&
+                                currentemail.text == usermail 
+                                ) {
+                              setState(() {
+                                nameerror = "Please Enter Name";
+                                emailerror = "";
+                              });
+                            } else if (name.text.isNotEmpty &&
+                                currentemail.text == usermail 
+                                ) {
+                              setState(() {
+                                nameerror = "";
+                                emailerror = "";
+                                editmod = true;
+                              });
+                              showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (context) {
+                                return AlertDialog(
+                                  content: Container(
+                                    height: 180,
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                     LottieBuilder.asset('images/upload.json',
+                                     height: 100,
+                                     ),
+                                     SizedBox(height: 5,),
+                                     _buildSendFileStatus(task!),
+                                    ])
                                   )
-                                : CircleAvatar(
-                                    backgroundColor: Colors.white,
-                                    backgroundImage: MemoryImage(_image!),
-                                    radius: 60,
-                                  ),
-                            SizedBox(width: 8.0),
-                            IconButton(
-                              onPressed: () {
-                                selectImage();
-                              },
-                              icon: Icon(
-                                Icons.camera_alt,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
+                                );
+                              });
+                              String imageUrl =file==null?userdata['profileUrl']:
+                                  await uploadImage(File(file!.path!));
+                              await FirebaseFirestore.instance
+                                  .collection("users")
+                                  .doc(uid)
+                                  .update({
+                                "username": name.text,
+                                "profileUrl": imageUrl,
+                              });
+                              Get.back();
+                            }
+                          },
+                          child: Icon(Icons.check, color: Colors.white),
                         ),
-                        SizedBox(height: 12.0),
-                        // name
-                        Text(
-                          username,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 24.0,
-                          ),
-                        ),
-                        SizedBox(height: 30.0),
+                ),
+                SizedBox(width: 20.0),
+              ],
+            ),
+            // end
+            body: SingleChildScrollView(
+              child: editmod
+                  ? Column(
+                      children: [
+                        // SizedBox(height: 100.0),
                         Container(
-                          height: 250.0,
+                          height: MediaQuery.of(context).size.height,
                           width: double.infinity,
                           decoration: BoxDecoration(
                             color: Color.fromARGB(255, 30, 76, 106),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black54,
-                                blurRadius: 4.0,
-                                spreadRadius: 2.0,
-                              ),
-                            ],
+                            // borderRadius: BorderRadius.only(
+                            //   topLeft: Radius.circular(60.0),
+                            //   topRight: Radius.circular(60.0),
+                            // ),
                           ),
                           child: Column(
                             children: [
-                              SizedBox(height: 8.0),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              CircleAvatar(
+                                backgroundColor: Colors.white,
+                                backgroundImage: NetworkImage(profilelink),
+                                radius: 60,
+                              ),
+                              // name
                               Text(
-                                "Change Name:",
+                                username,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 24.0,
+                                ),
+                              ),
+                              // username
+                              Text(
+                                "$usermail",
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
                               SizedBox(height: 20.0),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                              // rating
+                              Container(
+                                height: 30.0,
+                                width: 210.0,
+                                decoration: BoxDecoration(
+                                  color: Color.fromARGB(255, 30, 76, 106),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black54,
+                                      blurRadius: 4.0,
+                                      spreadRadius: 2.0,
+                                    ),
+                                  ],
+                                ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Text(
+                                      "Rating:",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                    // SizedBox(width:10),
+                                    SizedBox(
+                                      height: 30.0,
+                                      // width: 150.0,
+                                      child: RatingBarIndicator(
+                            rating: userdata['rating'].toDouble(),
+                            itemBuilder: (context, index) => Icon(
+                              Icons.star,
+                              color: Colors.amber,
+                            ),
+                            itemCount: 5,
+                            itemSize: 20.0,
+                            direction: Axis.horizontal,
+                          ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(height: 40.0),
+                              // response
+                              ProfileConst(
+                                res: "Positive",
+                                getcolor: Colors.green,
+                              ),
+                              ProfileConst(
+                                res: "Neutral",
+                                getcolor: Colors.blue,
+                              ),
+                              ProfileConst(
+                                res: "Negative",
+                                getcolor: Colors.red,
+                              ),
+                              // end
+                            ],
+                          ),
+                        ),
+                      ],
+                    )
+                  : Column(
+                      children: [
+                        // SizedBox(height: 100.0),
+                        Container(
+                          height: MediaQuery.of(context).size.height,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: Color.fromARGB(255, 30, 76, 106),
+                            // borderRadius: BorderRadius.only(
+                            //   topLeft: Radius.circular(60.0),
+                            //   topRight: Radius.circular(60.0),
+                            // ),
+                          ),
+                          child: Column(
+                            children: [
+                              SizedBox(height: 50.0),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  // name
-                                  Text(
-                                    "FULL NAME",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  SizedBox(height: 8.0),
-                                  SizedBox(
-                                    height: 40.0,
-                                    width: 250.0,
-                                    child: TextField(
-                                      controller: name,
-                                      decoration: InputDecoration(
-                                        isDense: true,
-                                        filled: true,
-                                        border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(12.0),
+                                  file == null
+                                      ? CircleAvatar(
+                                          backgroundColor: Colors.white,
+                                          backgroundImage: NetworkImage(
+                                              userdata['profileUrl']),
+                                          radius: 60,
+                                        )
+                                      : CircleAvatar(
+                                          backgroundColor: Colors.white,
+                                          backgroundImage: FileImage(File(file!.path!)),
+                                          radius: 60,
                                         ),
-                                        fillColor: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(height: 8.0),
-                                  Text(
-                                    nameerror,
-                                    style: TextStyle(
-                                      color: Colors.red,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  // email
-                                  SizedBox(height: 12.0),
-                                  Text(
-                                    "E-MAIl ADDRESS",
-                                    style: TextStyle(
+                                  SizedBox(width: 8.0),
+                                  IconButton(
+                                    onPressed: ()async {
+                                      final result =
+                                    await FilePicker.platform.pickFiles(
+                                  type: FileType.image,
+                                );
+                                setState(() {
+                                  file = result!.files.first;
+                                });
+                                    },
+                                    icon: Icon(
+                                      Icons.camera_alt,
                                       color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  SizedBox(height: 4.0),
-                                  SizedBox(
-                                    height: 40.0,
-                                    width: 250.0,
-                                    child: TextField(
-                                      controller: currentemail,
-                                      decoration: InputDecoration(
-                                        isDense: true,
-                                        filled: true,
-                                        border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(12.0),
-                                        ),
-                                        fillColor: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(height: 8.0),
-                                  Text(
-                                    emailerror,
-                                    style: TextStyle(
-                                      color: Colors.red,
-                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                 ],
+                              ),
+                              SizedBox(height: 12.0),
+                              // name
+                              Text(
+                                username,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 24.0,
+                                ),
+                              ),
+                              SizedBox(height: 30.0),
+                              Container(
+                                height: 250.0,
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  color: Color.fromARGB(255, 30, 76, 106),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black54,
+                                      blurRadius: 4.0,
+                                      spreadRadius: 2.0,
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    SizedBox(height: 8.0),
+                                    Text(
+                                      "Change Name:",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    SizedBox(height: 20.0),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        // name
+                                        Text(
+                                          "FULL NAME",
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        SizedBox(height: 8.0),
+                                        SizedBox(
+                                          height: 40.0,
+                                          width: 250.0,
+                                          child: TextField(
+                                            controller: name,
+                                            decoration: InputDecoration(
+                                              isDense: true,
+                                              filled: true,
+                                              border: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(12.0),
+                                              ),
+                                              fillColor: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(height: 8.0),
+                                        Text(
+                                          nameerror,
+                                          style: TextStyle(
+                                            color: Colors.red,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        // email
+                                        SizedBox(height: 12.0),
+                                        Text(
+                                          "E-MAIl ADDRESS",
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        SizedBox(height: 4.0),
+                                        SizedBox(
+                                          height: 40.0,
+                                          width: 250.0,
+                                          child: TextField(
+                                            controller: currentemail,
+                                            decoration: InputDecoration(
+                                              isDense: true,
+                                              filled: true,
+                                              border: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(12.0),
+                                              ),
+                                              fillColor: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(height: 8.0),
+                                        Text(
+                                          emailerror,
+                                          style: TextStyle(
+                                            color: Colors.red,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ),
                             ],
                           ),
                         ),
                       ],
                     ),
-                  ),
-                ],
-              ),
-      ),
-    );
+            ),
+          );
   }
+    Widget _buildSendFileStatus(UploadTask task) => StreamBuilder<TaskSnapshot>(
+        stream: task.snapshotEvents,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            final snap = snapshot.data!;
+            final progress = snap.bytesTransferred / snap.totalBytes;
+            final percentage = (progress * 100).toStringAsFixed(2);
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0),
+                  child: Container(
+                    height: 10,
+                    decoration: BoxDecoration(
+                        color: Colors.transparent,
+                        borderRadius: BorderRadius.circular(10)),
+                    width: 188,
+                    child: LinearProgressIndicator(
+                      color: Colors.blue,
+                      value: progress,
+                    ),
+                  ),
+                ),
+                SizedBox(width: 5,),
+                Text(
+                  '$percentage%',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ],
+            );
+          } else {
+            return Container(
+                color: Colors.transparent,
+                height: 10,
+                child: LinearProgressIndicator());
+          }
+        },
+      );
 }
 
 class ProfileConst extends StatelessWidget {

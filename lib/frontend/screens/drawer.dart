@@ -15,7 +15,10 @@ import '../../drawer/saved.dart';
 import '../../drawer/sellingitem.dart';
 
 class DrawerPage extends StatefulWidget {
-  const DrawerPage({super.key});
+  String name;
+  String email;
+  String url;
+   DrawerPage({super.key,required this.url,required this.email,required this.name});
 
   @override
   State<DrawerPage> createState() => _DrawerPageState();
@@ -49,24 +52,18 @@ class _DrawerPageState extends State<DrawerPage> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 10.0, vertical: 10.0),
+                          horizontal: 7.0, vertical: 10.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           CircleAvatar(
                             backgroundColor: Colors.white54,
-                            radius: 30.0,
-                            child: Center(
-                              child: Icon(
-                                Icons.person,
-                                color: Colors.white,
-                                size: 26.0,
-                              ),
-                            ),
+                            radius: 42.0,
+                            backgroundImage: NetworkImage(widget.url),
                           ),
                           SizedBox(width: 8.0),
                           Text(
-                            "hassanbutt",
+                            widget.name,
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
@@ -76,11 +73,11 @@ class _DrawerPageState extends State<DrawerPage> {
                       ),
                     ),
                     Text(
-                      "Hassan Butt",
+                      widget.email,
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         color: Colors.white,
-                        fontSize: 30.0,
+                        fontSize: 24.0,
                       ),
                     ),
                     SizedBox(),

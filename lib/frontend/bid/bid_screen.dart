@@ -60,6 +60,7 @@ class _bid_screenState extends State<bid_screen> {
     return Scaffold(
       appBar: AppBar(
         iconTheme: IconThemeData(color: Colors.white),
+        backgroundColor:  Color.fromARGB(255, 30, 76, 106),
         title: Text(
           'Bid It',
           style: TextStyle(

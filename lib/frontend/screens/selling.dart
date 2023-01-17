@@ -2,6 +2,7 @@
 
 import 'package:animations/animations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
@@ -21,6 +22,7 @@ class _SellingPageState extends State<SellingPage> {
   @override
   void initState() {
     load();
+    getUserData();
     // TODO: implement initState
     super.initState();
   }
@@ -28,6 +30,26 @@ class _SellingPageState extends State<SellingPage> {
     await Future.delayed(Duration(seconds: 3));
     setState(() {
       loading=false;
+    });
+  }
+  var userData = {};
+   bool isLoading = false;
+  Future getUserData() async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      var usersD =
+          await FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser!.uid).get();
+      
+      setState(() {
+       userData = usersD.data()!;
+      });
+    } catch (e) {
+      print(e);
+    }
+    setState(() {
+      isLoading = false;
     });
   }
   String title = 'Dell Laptop';
@@ -38,7 +60,11 @@ class _SellingPageState extends State<SellingPage> {
       backgroundColor: Color.fromARGB(255, 228, 243, 255),
       drawer: Drawer(
         backgroundColor: Colors.white,
-        child: DrawerPage(),
+        child: DrawerPage(
+          url:!isLoading? userData['profileUrl']:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRhW0hzwECDKq0wfUqFADEJaNGESHQ8GRCJIg&usqp=CAU',
+          email:!isLoading?  userData['email']:'Loading',
+          name:!isLoading?  userData['username']:'Loading',
+        ),
       ),
       // appbar
       appBar: AppBar(

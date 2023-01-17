@@ -45,21 +45,33 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.lightBlue,
-        appBarTheme: AppBarTheme(color:Color.fromARGB(255, 30, 76, 106))
-        // scaffoldBackgroundColor: Color.fromARGB(255, 30, 76, 106),
-        // useMaterial3: true,
+      // theme: ThemeData(
+      //   // This is the theme of your application.
+      //   //
+      //   // Try running your application with "flutter run". You'll see the
+      //   // application has a blue toolbar. Then, without quitting the app, try
+      //   // changing the primarySwatch below to Colors.green and then invoke
+      //   // "hot reload" (press "r" in the console where you ran "flutter run",
+      //   // or simply save your changes to "hot reload" in a Flutter IDE).
+      //   // Notice that the counter didn't reset back to zero; the application
+      //   // is not restarted.
+      //   primarySwatch: Colors.lightBlue,
+      //   appBarTheme: AppBarTheme(color:Color.fromARGB(255, 30, 76, 106))
+      //   // scaffoldBackgroundColor: Color.fromARGB(255, 30, 76, 106),
+      //   // useMaterial3: true,
         
+      // ),
+      theme:ThemeData.light().copyWith(
+        primaryColor:  Color.fromARGB(255, 30, 76, 106),
+    scaffoldBackgroundColor: Colors.white,
+    appBarTheme: AppBarTheme(
+        centerTitle: false, backgroundColor: kPrimaryColor),
+    // iconTheme: IconThemeData(color: Colors.wh),
+    colorScheme: ColorScheme.light(
+      primary: Color.fromARGB(255, 30, 76, 106),
+      secondary: Colors.orange,
+      error: Colors.red,
+    ),
       ),
       scrollBehavior: const CupertinoScrollBehavior(),
       home: StreamBuilder(

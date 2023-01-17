@@ -1,12 +1,14 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_unnecessary_containers
 
+import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
+
 import 'package:lottie/lottie.dart';
 import 'package:nelaamproject/backend/auth/postingproduct.dart';
 import 'package:nelaamproject/frontend/screens/selling.dart';
@@ -45,14 +47,9 @@ class _UploadingPageState extends State<UploadingPage> {
   bool eprice = false;
   bool ebid = false;
   ///////////////////////
-  void selectImage() async {
-    Uint8List img = await pickImage(ImageSource.gallery);
-    setState(() {
-      _image = img;
-    });
-  } 
+  
   UploadTask? task;
-  Future<String> uploadImage(Uint8List image) async {
+  Future<String> uploadImage(File image) async {
     var uuid = Uuid();
     var id = uuid.v1();
     // folder name & iamge name
@@ -61,13 +58,13 @@ class _UploadingPageState extends State<UploadingPage> {
         .child('ProductImages')
         .child('${id}.jpg');
     // image is uploading from putData()
-    task = ref.putData(image);
+    task = ref.putFile(image);
     TaskSnapshot taskSnapshot = await task!;
     String downloadUrl = await taskSnapshot.ref.getDownloadURL();
     return downloadUrl;
   } 
   bool uploading = false;
-
+  PlatformFile? file;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -100,7 +97,7 @@ class _UploadingPageState extends State<UploadingPage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    _image == null
+                    file == null
                         ? Container(
                             height: 150.0,
                             width: 180.0,
@@ -117,7 +114,7 @@ class _UploadingPageState extends State<UploadingPage> {
                             width: 180.0,
                             decoration: BoxDecoration(
                               image: DecorationImage(
-                                image: MemoryImage(_image!),
+                                image: FileImage(File(file!.path!)),
                                 fit: BoxFit.fill
                               ),
                               color: Colors.white,
@@ -131,8 +128,14 @@ class _UploadingPageState extends State<UploadingPage> {
                       width: 5,
                     ),
                     InkWell(
-                      onTap: () {
-                        selectImage();
+                      onTap: ()async {
+                        final result =
+                                    await FilePicker.platform.pickFiles(
+                                  type: FileType.image,
+                                );
+                                setState(() {
+                                  file = result!.files.first;
+                                });
                       },
                       child: Container(
                         height: 40.0,
@@ -411,7 +414,7 @@ class _UploadingPageState extends State<UploadingPage> {
                                   )
                                 );
                               });
-                        String imageUrl = await uploadImage(_image!);
+                        String imageUrl = await uploadImage(File(file!.path!));
                         await prodcutUpload(
                           name.text,
                           details.text,
