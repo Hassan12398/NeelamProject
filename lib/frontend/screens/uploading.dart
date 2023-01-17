@@ -474,7 +474,7 @@ class _UploadingPageState extends State<UploadingPage> {
                     decoration: BoxDecoration(
                         color: Colors.transparent,
                         borderRadius: BorderRadius.circular(10)),
-                    width: 188,
+                    width: 170,
                     child: LinearProgressIndicator(
                       color: Colors.blue,
                       value: progress,

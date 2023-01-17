@@ -45,6 +45,8 @@ class AuthFunction extends GetxController {
             'status':'unavailable',
             'statusT':DateTime.now(),
             'uid':cred.user!.uid,
+            'bid post':[],
+            'like posts':[],
             'verify':false,
             'rating':0,
             'response':'good',

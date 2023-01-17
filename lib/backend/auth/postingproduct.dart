@@ -26,6 +26,8 @@ Future prodcutUpload(
       "bids":[],
       "uid": FirebaseAuth.instance.currentUser!.uid,
       "postId":id,
+      "bid on":false,
+      "likes":[],
       "rating":0,
       "reviews":[],
     });
