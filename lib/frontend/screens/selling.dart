@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
+import 'categoryDetails.dart';
 import 'drawer.dart';
 import 'itmedetails.dart';
 
@@ -68,7 +69,7 @@ class _SellingPageState extends State<SellingPage> {
         backgroundColor: Colors.white,
         child: DrawerPage(
           url: !isLoading
-              ? userData['profileUrl'] 
+              ? userData['profileUrl']
               : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRhW0hzwECDKq0wfUqFADEJaNGESHQ8GRCJIg&usqp=CAU',
           email: !isLoading ? userData['email'] : 'Loading',
           name: !isLoading ? userData['username'] : 'Loading',
@@ -140,18 +141,9 @@ class _SellingPageState extends State<SellingPage> {
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
-                  TopDealsConst(
-                    title: "Music",
-                    image: "music",
-                  ),
-                  TopDealsConst(
-                    title: "Watch",
-                    image: "watch",
-                  ),
-                  TopDealsConst(
-                    title: "Video Games",
-                    image: "gamepad",
-                  ),
+                  TopDealsConst(title: "Books", image: "books"),
+                  TopDealsConst(title: "Clothing, Shoes...", image: "clothing"),
+                  TopDealsConst(title: "Collectibles", image: "collectibles"),
                 ],
               ),
             ),
@@ -252,6 +244,7 @@ class _SellingPageState extends State<SellingPage> {
                                         rating: snap['rating'],
                                         reviews: snap['reviews'].length,
                                         price: snap['Price'],
+                                        status:  snap['bid on'],
                                       );
                                     },
                                     closedBuilder: (_, __) {
@@ -279,54 +272,101 @@ class _SellingPageState extends State<SellingPage> {
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceBetween,
                                             children: [
-                                              Container(
-                                                height: MediaQuery.of(context)
-                                                        .size
-                                                        .height /
-                                                    7.4,
-                                                decoration: BoxDecoration(
-                                                    color: Color.fromARGB(
-                                                        255, 52, 52, 52),
-                                                    borderRadius:
-                                                        BorderRadius.only(
-                                                            topLeft: Radius
-                                                                .circular(1),
-                                                            topRight:
-                                                                Radius.circular(
-                                                                    1)),
-                                                    image: DecorationImage(
-                                                        image: NetworkImage(
-                                                            snap[
-                                                                'Product pic']),
-                                                        fit: BoxFit.cover)),
-                                              ),
                                               Column(
                                                 children: [
                                                   Container(
-                                                    height: 25,
-                                                    color: Colors.transparent,
-                                                    child: Row(
-                                                      children: [
-                                                        Padding(
-                                                          padding:
-                                                              const EdgeInsets
+                                                    height:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .height /
+                                                            6.8,
+                                                    decoration: BoxDecoration(
+                                                        color: Color.fromARGB(
+                                                            255, 52, 52, 52),
+                                                        borderRadius:
+                                                            BorderRadius.only(
+                                                                topLeft: Radius
+                                                                    .circular(
+                                                                        1),
+                                                                topRight: Radius
+                                                                    .circular(
+                                                                        1)),
+                                                        image: DecorationImage(
+                                                            image: NetworkImage(
+                                                                snap['Product pic']),
+                                                            fit: BoxFit.cover)),
+                                                  ),
+                                                  Column(
+                                                    children: [
+                                                      Container(
+                                                        height: 20,
+                                                        color:
+                                                            Colors.transparent,
+                                                        child: Row(
+                                                          children: [
+                                                            Padding(
+                                                              padding: const EdgeInsets
                                                                       .symmetric(
                                                                   horizontal:
                                                                       5),
-                                                          child: Text(
-                                                            '${snap['Price']}.Rs',
-                                                            style: TextStyle(
+                                                              child: Text(
+                                                                '${snap['Price']}.Rs',
+                                                                style: TextStyle(
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                    fontSize:
+                                                                        14),
+                                                              ),
+                                                            )
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      Container(
+                                                        height: 14,
+                                                        color:
+                                                            Colors.transparent,
+                                                        child: Align(
+                                                          alignment:
+                                                              Alignment.topLeft,
+                                                          child: Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                        .symmetric(
+                                                                    horizontal:
+                                                                        5),
+                                                            child: Text(
+                                                              snap['Product Name']
+                                                                          .toString()
+                                                                          .length <
+                                                                      10
+                                                                  ? snap['Product Name']
+                                                                      .toString()
+                                                                  : snap['Product Name']
+                                                                      .toString()
+                                                                      .replaceRange(
+                                                                          10,
+                                                                          snap['Product Name']
+                                                                              .toString()
+                                                                              .length,
+                                                                          '...'),
+                                                              style: TextStyle(
+                                                                fontSize: 13,
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .bold,
-                                                                fontSize: 14),
+                                                              ),
+                                                            ),
                                                           ),
-                                                        )
-                                                      ],
-                                                    ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  SizedBox(
+                                                    height: 4,
                                                   ),
                                                   Container(
-                                                    height: 14,
+                                                    height: 40,
                                                     color: Colors.transparent,
                                                     child: Align(
                                                       alignment:
@@ -337,64 +377,27 @@ class _SellingPageState extends State<SellingPage> {
                                                                     .symmetric(
                                                                 horizontal: 5),
                                                         child: Text(
-                                                          snap['Product Name']
+                                                          snap['Product Details']
                                                                       .toString()
                                                                       .length <
-                                                                  10
-                                                              ? snap['Product Name']
+                                                                  80
+                                                              ? snap['Product Details']
                                                                   .toString()
-                                                              : snap['Product Name']
+                                                              : snap['Product Details']
                                                                   .toString()
                                                                   .replaceRange(
-                                                                      10,
-                                                                      snap['Product Name']
+                                                                      77,
+                                                                      snap['Product Details']
                                                                           .toString()
                                                                           .length,
                                                                       '...'),
                                                           style: TextStyle(
-                                                            fontSize: 13,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                          ),
+                                                              fontSize: 10),
                                                         ),
                                                       ),
                                                     ),
                                                   ),
-                                                
-                                              SizedBox(
-                                                height: 4,
-                                              ),
-                                              Container(
-                                                height: 40,
-                                                color: Colors.transparent,
-                                                child: Align(
-                                                  alignment: Alignment.topLeft,
-                                                  child: Padding(
-                                                    padding: const EdgeInsets
-                                                            .symmetric(
-                                                        horizontal: 5),
-                                                    child: Text(
-                                                      snap['Product Details']
-                                                                  .toString()
-                                                                  .length <
-                                                              80
-                                                          ? snap['Product Details']
-                                                              .toString()
-                                                          : snap['Product Details']
-                                                              .toString()
-                                                              .replaceRange(
-                                                                  77,
-                                                                  snap['Product Details']
-                                                                      .toString()
-                                                                      .length,
-                                                                  '...'),
-                                                      style: TextStyle(
-                                                          fontSize: 10),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                              ],
+                                                ],
                                               ),
                                               Container(),
                                               Container(
@@ -405,34 +408,28 @@ class _SellingPageState extends State<SellingPage> {
                                                           .spaceBetween,
                                                   children: [
                                                     Padding(
-                                                      padding:
-                                                          const EdgeInsets
-                                                                  .symmetric(
-                                                              horizontal: 5),
+                                                      padding: const EdgeInsets
+                                                              .symmetric(
+                                                          horizontal: 5),
                                                       child: Text(
                                                         '$bid Bids',
                                                         style: TextStyle(
                                                             fontWeight:
-                                                                FontWeight
-                                                                    .bold,
-                                                            color:
-                                                                Colors.grey,
+                                                                FontWeight.bold,
+                                                            color: Colors.grey,
                                                             fontSize: 13),
                                                       ),
                                                     ),
                                                     Padding(
-                                                      padding:
-                                                          const EdgeInsets
-                                                                  .symmetric(
-                                                              horizontal: 5),
+                                                      padding: const EdgeInsets
+                                                              .symmetric(
+                                                          horizontal: 5),
                                                       child: Text(
                                                         '${snap['rating']}.0⭐',
                                                         style: TextStyle(
                                                             fontWeight:
-                                                                FontWeight
-                                                                    .bold,
-                                                            color:
-                                                                Colors.grey,
+                                                                FontWeight.bold,
+                                                            color: Colors.grey,
                                                             fontSize: 13),
                                                       ),
                                                     ),
@@ -479,36 +476,46 @@ class TopDealsConst extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(12.0),
-      child: Column(
-        children: [
-          Container(
-            height: 120,
-            width: 140,
-            decoration: BoxDecoration(
-                color: Color.fromARGB(255, 255, 248, 190),
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: Color.fromARGB(255, 84, 83, 83),
-                    blurRadius: 2,
-                    spreadRadius: 1,
-                    offset: Offset(-1, 5),
-                  )
-                ]),
-            child: Center(
-              child: Image.asset("images/$image.png", height: 80.0),
-            ),
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => CategoryDetails(categoryName: title),
           ),
-          SizedBox(height: 8.0),
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 18.0,
+        );
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
+        child: Column(
+          children: [
+            Container(
+              height: 120,
+              width: 140,
+              decoration: BoxDecoration(
+                  color: Color.fromARGB(255, 255, 248, 190),
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color.fromARGB(255, 84, 83, 83),
+                      blurRadius: 2,
+                      spreadRadius: 1,
+                      offset: Offset(-1, 5),
+                    )
+                  ]),
+              child: Center(
+                child: Image.asset("images/$image.png", height: 80.0),
+              ),
             ),
-          ),
-        ],
+            SizedBox(height: 8.0),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 18.0,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

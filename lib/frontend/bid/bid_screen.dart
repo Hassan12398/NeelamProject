@@ -424,6 +424,15 @@ class _bid_screenState extends State<bid_screen> {
                                                           "bids": FieldValue
                                                               .arrayUnion(bid),
                                                         });
+                                                        await FirebaseFirestore
+                                                            .instance
+                                                            .collection(
+                                                                'users')
+                                                            .doc(FirebaseAuth.instance.currentUser!.uid)
+                                                            .update({
+                                                          "bid post": FieldValue
+                                                              .arrayUnion(bid),
+                                                        });
                                                       },
                                                       child: Container(
                                                         height: 43,

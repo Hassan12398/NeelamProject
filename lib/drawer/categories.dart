@@ -18,7 +18,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
       backgroundColor: Color.fromARGB(255, 228, 243, 255),
       // appbar
       appBar: AppBar(
-        backgroundColor:Color.fromARGB(255, 30, 76, 106),
+        backgroundColor: Color.fromARGB(255, 30, 76, 106),
         centerTitle: true,
         elevation: 0.0,
         title: Text(
@@ -33,54 +33,81 @@ class _CategoriesPageState extends State<CategoriesPage> {
         ],
       ),
       // end
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(height: 12.0),
-          // top deals
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: Text(
-              "Top Deals",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 24.0,
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: 12.0),
+            // top deals
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Text(
+                "Top Deals",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 24.0,
+                ),
               ),
             ),
-          ),
-          // top deals row
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                TopDealsConst(
-                  title: "Music",
-                  image: "music",
-                ),
-                TopDealsConst(
-                  title: "Watch",
-                  image: "watch",
-                ),
-                TopDealsConst(
-                  title: "Video Games",
-                  image: "gamepad",
-                ),
-              ],
-            ),
-          ),
-          // all
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: Text(
-              "All Categories",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 24.0,
+            // top deals row
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  TopDealsConst(title: "Books", image: "books"),
+                  TopDealsConst(title: "Clothing, Shoes...", image: "clothing"),
+                  TopDealsConst(title: "Collectibles", image: "collectibles"),
+                ],
               ),
             ),
-          ),
-          // end
-        ],
+            // all
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Text(
+                "All Categories",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 24.0,
+                ),
+              ),
+            ),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  TopDealsConst(
+                      title: "Consumer Electronics", image: "electronics"),
+                  TopDealsConst(title: "Crafts", image: "crafts"),
+                  TopDealsConst(title: "Dolls and Bears", image: "bears"),
+                ],
+              ),
+            ),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  TopDealsConst(title: "Home and Garden", image: "garden"),
+                  TopDealsConst(title: "Sporting Goods", image: "sports"),
+                  TopDealsConst(title: "Toys and Hobbies", image: "toys"),
+                ],
+              ),
+            ),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  TopDealsConst(title: "Antiques", image: "antiques"),
+                  TopDealsConst(title: "Books", image: "books"),
+                  TopDealsConst(title: "Clothing, Shoes...", image: "clothing"),
+                  TopDealsConst(title: "Collectibles", image: "collectibles"),
+                ],
+              ),
+            ),
+            // end
+          ],
+        ),
       ),
     );
   }

@@ -13,13 +13,14 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPageState extends State<CartPage> {
+  var data;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 30, 76, 106),
       // appbar
       appBar: AppBar(
-        backgroundColor:Color.fromARGB(255, 30, 76, 106),
+        backgroundColor: Color.fromARGB(255, 30, 76, 106),
         centerTitle: true,
         shadowColor: Colors.white,
         elevation: 5.0,
@@ -39,8 +40,12 @@ class _CartPageState extends State<CartPage> {
             width: double.infinity,
             color: Colors.white,
           ),
-          ItemsForSellConst(),
-          ItemsForSellConst(),
+          ItemsForSellConst(
+            productData: data,
+          ),
+          ItemsForSellConst(
+            productData: data,
+          ),
           // end
         ],
       ),

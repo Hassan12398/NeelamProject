@@ -11,11 +11,11 @@ Future prodcutUpload(
   String bid,
   String categories,
   String imageUrl,
+  String username,
 ) async {
   var uuid = Uuid();
   var id = uuid.v1();
   try {
-    
     await FirebaseFirestore.instance.collection("Products").doc(id).set({
       "Product Name": productName,
       "Product Details": details,
@@ -23,21 +23,24 @@ Future prodcutUpload(
       "Minimum Bid": bid,
       "Categories": categories,
       "Product pic": imageUrl,
-      "bids":[],
+      "username": username,
+      "bids": [],
       "uid": FirebaseAuth.instance.currentUser!.uid,
-      "postId":id,
-      "bid on":false,
-      "likes":[],
-      "rating":0,
-      "reviews":[],
+      "postId": id,
+      "bid on": false,
+      "likes": [],
+      "rating": 0,
+      "reviews": [],
     });
     List postId = [];
     postId.add(id);
-    await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).update({
-      "posts":FieldValue.arrayUnion(postId),
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .update({
+      "posts": FieldValue.arrayUnion(postId),
     });
   } catch (e) {
     print(e);
   }
 }
-

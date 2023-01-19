@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
 import 'package:nelaamproject/frontend/bid/bid_screen.dart';
+import 'package:nelaamproject/frontend/message/message.dart';
 import 'package:nelaamproject/widgets/snackbar.dart';
 
 import 'cart.dart';
@@ -23,6 +24,7 @@ class ItemDetailsPage extends StatefulWidget {
   int bidlength;
   int rating;
   int reviews;
+  bool status;
   List bidL;
   ItemDetailsPage({
     super.key,
@@ -32,6 +34,7 @@ class ItemDetailsPage extends StatefulWidget {
     required this.price,
     required this.details,
     required this.bidlength,
+    required this.status,
     required this.postId,
     required this.bidL,
     required this.rating,
@@ -49,6 +52,7 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
   void initState() {
     // TODO: implement initState
     getData();
+    getData1();
     super.initState();
   }
 
@@ -72,6 +76,64 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
     });
   }
 
+  var userData1 = {};
+  getData1() async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      var Usersnap = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .get();
+
+      setState(() {
+        userData1 = Usersnap.data()!;
+      });
+    } catch (e) {}
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  CreateChatRoom(String uid, name1, name2, String prof1, String prof2,
+      BuildContext context) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .collection('Chatrooms')
+          .doc(uid)
+          .set({
+        'uid': uid,
+        'lastMessage': '',
+        'username': name2,
+        'profileImage': prof2,
+        'time': DateTime.now(),
+      });
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .collection('Chatrooms')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .set({
+        'uid': FirebaseAuth.instance.currentUser!.uid,
+        'username': name1,
+        'lastMessage': '',
+        'profileImage': prof1,
+        'time': DateTime.now(),
+      });
+      Get.to(
+          message_screen(
+            // chatId: uid,
+            uid: uid,
+          ),
+          transition: Transition.rightToLeft);
+    } catch (e) {
+      Showsnackbar(context, e.toString());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     int show = int.parse(widget.price);
@@ -79,7 +141,6 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
         'The best price of Dell Inspiron 15 3000 in Pakistan is Rs.131,299 and the lowest price found is Rs.58,999. The prices of Dell Inspiron 15 3000 is collected from the most trusted online stores in Pakistan such as daraz.pk, mega.pk, shophive.com, and tajori.pk . The collected prices were updated on Sept. 26, 2022, 11:25 a.m.';
     return Scaffold(
       backgroundColor: Colors.white,
-
       // appbar
       body: SafeArea(
           child: Stack(
@@ -90,7 +151,7 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
           ),
           Container(
             height: 220,
-            color: Colors.red,
+            color: Colors.white,
             child: Stack(
               children: [
                 Container(
@@ -458,16 +519,33 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Container(
-                    width: 70,
-                    height: 50,
-                    decoration: BoxDecoration(
-                        border: Border(
-                            right: BorderSide(
-                      color: Colors.grey,
-                    ))),
-                    child: Icon(
-                      CupertinoIcons.chat_bubble_text,
+                  GestureDetector(
+                    onTap: () {
+                      if (widget.uid ==
+                          FirebaseAuth.instance.currentUser!.uid) {
+                        Showsnackbar(context,
+                            'You are a user you cann\'t chat with yourself!');
+                      } else {
+                        CreateChatRoom(
+                            userData['uid'],
+                            userData1['username'],
+                            userData['username'],
+                            userData1['profileUrl'],
+                            userData['profileUrl'],
+                            context);
+                      }
+                    },
+                    child: Container(
+                      width: 70,
+                      height: 50,
+                      decoration: BoxDecoration(
+                          border: Border(
+                              right: BorderSide(
+                        color: Colors.grey,
+                      ))),
+                      child: Icon(
+                        CupertinoIcons.chat_bubble_text,
+                      ),
                     ),
                   ),
                   InkWell(
@@ -554,18 +632,160 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                       ),
                     ),
                   ),
-                  Container(
-                    width: 70,
-                    height: 50,
-                    decoration: BoxDecoration(
-                        border: Border(
-                            left: BorderSide(
-                      color: Colors.grey,
-                    ))),
-                    child: Icon(
-                      Icons.favorite_border,
-                    ),
-                  ),
+                  StreamBuilder(
+                      stream: FirebaseFirestore.instance
+                          .collection('Products')
+                          .doc(widget.postId)
+                          .snapshots(),
+                      builder: (context,
+                          AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>>
+                              snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Container(
+                            width: 70,
+                            height: 50,
+                            decoration: BoxDecoration(
+                                border: Border(
+                                    left: BorderSide(
+                              color: Colors.grey,
+                            ))),
+                            child: Icon(
+                              Icons.favorite_border,
+                            ),
+                          );
+                        }
+                        return GestureDetector(
+                          onTap: () async {
+                            List uid = [FirebaseAuth.instance.currentUser!.uid];
+                            List postId = [widget.postId];
+                            if (!snapshot.data?['likes'].contains(
+                                FirebaseAuth.instance.currentUser!.uid)) {
+                              FirebaseFirestore.instance
+                                  .collection('Products')
+                                  .doc(widget.postId)
+                                  .update({
+                                "likes": FieldValue.arrayUnion(uid),
+                              });
+                              FirebaseFirestore.instance
+                                  .collection('users')
+                                  .doc(FirebaseAuth.instance.currentUser!.uid)
+                                  .update({
+                                "like posts": FieldValue.arrayUnion(postId),
+                              });
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  action: SnackBarAction(
+                                    label: 'Undo',
+                                    textColor: Colors.blue,
+                                    onPressed: () {
+                                      // Code to execute.
+                                      FirebaseFirestore.instance
+                                          .collection('Products')
+                                          .doc(widget.postId)
+                                          .update({
+                                        "likes": FieldValue.arrayRemove(uid),
+                                      });
+                                      FirebaseFirestore.instance
+                                          .collection('users')
+                                          .doc(FirebaseAuth
+                                              .instance.currentUser!.uid)
+                                          .update({
+                                        "like posts":
+                                            FieldValue.arrayRemove(postId),
+                                      });
+                                    },
+                                  ),
+                                  content: Text(
+                                      'Add item to wishlist Successfully!'),
+                                  //backgroundColor: Colors.blueGrey,
+                                  duration: const Duration(milliseconds: 1000),
+                                  width: 350.0, // Width of the SnackBar.
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal:
+                                        10.0, // Inner padding for SnackBar content.
+                                  ),
+
+                                  behavior: SnackBarBehavior.floating,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                ),
+                              );
+                            } else {
+                              FirebaseFirestore.instance
+                                  .collection('Products')
+                                  .doc(widget.postId)
+                                  .update({
+                                "likes": FieldValue.arrayRemove(uid),
+                              });
+                              FirebaseFirestore.instance
+                                  .collection('users')
+                                  .doc(FirebaseAuth.instance.currentUser!.uid)
+                                  .update({
+                                "like posts": FieldValue.arrayRemove(postId),
+                              });
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  action: SnackBarAction(
+                                    textColor: Colors.blue,
+                                    label: 'Undo',
+                                    onPressed: () {
+                                      // Code to execute.
+                                      FirebaseFirestore.instance
+                                          .collection('Products')
+                                          .doc(widget.postId)
+                                          .update({
+                                        "likes": FieldValue.arrayUnion(uid),
+                                      });
+                                      FirebaseFirestore.instance
+                                          .collection('users')
+                                          .doc(FirebaseAuth
+                                              .instance.currentUser!.uid)
+                                          .update({
+                                        "like posts":
+                                            FieldValue.arrayUnion(postId),
+                                      });
+                                    },
+                                  ),
+                                  content: Text(
+                                      'Deleted item from wishlist Successfully!'),
+                                  //backgroundColor: Colors.blueGrey,
+                                  duration: const Duration(milliseconds: 1000),
+                                  width: 350.0, // Width of the SnackBar.
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal:
+                                        10.0, // Inner padding for SnackBar content.
+                                  ),
+                                  behavior: SnackBarBehavior.floating,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                          child: Container(
+                            width: 70,
+                            height: 50,
+                            decoration: BoxDecoration(
+                                border: Border(
+                                    left: BorderSide(
+                              color: Colors.grey,
+                            ))),
+                            child: Icon(
+                              snapshot.data?['likes'].contains(
+                                      FirebaseAuth.instance.currentUser!.uid)
+                                  ? CupertinoIcons.bookmark_fill
+                                  : CupertinoIcons.bookmark,
+                              color: snapshot.data?['likes'].contains(
+                                      FirebaseAuth.instance.currentUser!.uid)
+                                  ? Colors.yellow
+                                  : Colors.black,
+                            ),
+                          ),
+                        );
+                      }),
                 ],
               ),
             ),

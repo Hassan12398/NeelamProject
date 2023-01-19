@@ -12,16 +12,16 @@ import 'package:nelaamproject/frontend/screens/mainbottombar.dart';
 import 'package:nelaamproject/frontend/screens/selling.dart';
 import 'package:nelaamproject/frontend/screens/welcome.dart';
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
- await Firebase.initializeApp(
+  await Firebase.initializeApp(
           // options: FirebaseOptions(
           //     apiKey: "AIzaSyB4bbS4zXC8eX_YW9DZ8S6s69Hxau7muNk",
           //     projectId: "chatapp-fde18",
           //     messagingSenderId: "1001240436735",
           //     appId: "1:1001240436735:web:17e9a30bfbccfd42d391ca")
-              )
+          )
       .then((value) => Get.put(AuthFunction()));
   SystemChrome.setPreferredOrientations(
     [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
@@ -36,11 +36,10 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarColor:  Color.fromARGB(255, 30, 76, 106),
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Color.fromARGB(255, 30, 76, 106),
       statusBarIconBrightness: Brightness.light,
-      statusBarBrightness:
-          Brightness.dark,
+      statusBarBrightness: Brightness.dark,
     ));
     return GetMaterialApp(
       title: 'Flutter Demo',
@@ -59,19 +58,20 @@ class MyApp extends StatelessWidget {
       //   appBarTheme: AppBarTheme(color:Color.fromARGB(255, 30, 76, 106))
       //   // scaffoldBackgroundColor: Color.fromARGB(255, 30, 76, 106),
       //   // useMaterial3: true,
-        
+
       // ),
-      theme:ThemeData.light().copyWith(
-        primaryColor:  Color.fromARGB(255, 30, 76, 106),
-    scaffoldBackgroundColor: Colors.white,
-    appBarTheme: AppBarTheme(
-        centerTitle: false, backgroundColor: kPrimaryColor),
-    // iconTheme: IconThemeData(color: Colors.wh),
-    colorScheme: ColorScheme.light(
-      primary: Color.fromARGB(255, 30, 76, 106),
-      secondary: Colors.orange,
-      error: Colors.red,
-    ),
+      theme: ThemeData.light().copyWith(
+        primaryColor: Color.fromARGB(255, 30, 76, 106),
+        scaffoldBackgroundColor: Colors.white,
+        appBarTheme: AppBarTheme(
+            centerTitle: false,
+            backgroundColor: Color.fromARGB(255, 30, 76, 106)),
+        // iconTheme: IconThemeData(color: Colors.wh),
+        colorScheme: ColorScheme.light(
+          primary: Color.fromARGB(255, 30, 76, 106),
+          secondary: Colors.orange,
+          error: Colors.red,
+        ),
       ),
       scrollBehavior: const CupertinoScrollBehavior(),
       home: StreamBuilder(
@@ -86,4 +86,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-

@@ -74,6 +74,7 @@ class _BidsPageState extends State<BidsPage> {
                                     rating: snap['rating'],
                                     reviews: snap['reviews'].length,
                                     price: snap['Price'],
+                                    status: snap['bid on'],
                                   ),
                                   transition: Transition.rightToLeft);
                             },

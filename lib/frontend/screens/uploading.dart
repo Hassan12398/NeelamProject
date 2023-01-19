@@ -3,7 +3,9 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -47,7 +49,7 @@ class _UploadingPageState extends State<UploadingPage> {
   bool eprice = false;
   bool ebid = false;
   ///////////////////////
-  
+
   UploadTask? task;
   Future<String> uploadImage(File image) async {
     var uuid = Uuid();
@@ -62,16 +64,45 @@ class _UploadingPageState extends State<UploadingPage> {
     TaskSnapshot taskSnapshot = await task!;
     String downloadUrl = await taskSnapshot.ref.getDownloadURL();
     return downloadUrl;
-  } 
+  }
+
   bool uploading = false;
   PlatformFile? file;
+  @override
+  void initState() {
+    getData1();
+    // TODO: implement initState
+    super.initState();
+  }
+
+  bool isLoading = false;
+  var userData1 = {};
+  getData1() async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      var Usersnap = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .get();
+
+      setState(() {
+        userData1 = Usersnap.data()!;
+      });
+    } catch (e) {}
+    setState(() {
+      isLoading = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       // appbar
       appBar: AppBar(
-        backgroundColor:Color.fromARGB(255, 30, 76, 106),
+        backgroundColor: Color.fromARGB(255, 30, 76, 106),
         elevation: 0.0,
         centerTitle: true,
         automaticallyImplyLeading: false,
@@ -114,9 +145,8 @@ class _UploadingPageState extends State<UploadingPage> {
                             width: 180.0,
                             decoration: BoxDecoration(
                               image: DecorationImage(
-                                image: FileImage(File(file!.path!)),
-                                fit: BoxFit.fill
-                              ),
+                                  image: FileImage(File(file!.path!)),
+                                  fit: BoxFit.fill),
                               color: Colors.white,
                               border: Border.all(
                                 color: Color.fromARGB(255, 12, 77, 131),
@@ -128,14 +158,13 @@ class _UploadingPageState extends State<UploadingPage> {
                       width: 5,
                     ),
                     InkWell(
-                      onTap: ()async {
-                        final result =
-                                    await FilePicker.platform.pickFiles(
-                                  type: FileType.image,
-                                );
-                                setState(() {
-                                  file = result!.files.first;
-                                });
+                      onTap: () async {
+                        final result = await FilePicker.platform.pickFiles(
+                          type: FileType.image,
+                        );
+                        setState(() {
+                          file = result!.files.first;
+                        });
                       },
                       child: Container(
                         height: 40.0,
@@ -293,163 +322,173 @@ class _UploadingPageState extends State<UploadingPage> {
                   ),
                 ),
               ),
-             uploading?_buildSendFileStatus(task!): Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Center(
-                  child: InkWell(
-                    onTap: () async {
-                      if (details.text.isEmpty &&
-                          price.text.isEmpty &&
-                          name.text.isEmpty &&
-                          bid.text.isEmpty) {
-                        setState(() {
-                          edetails = true;
-                          eprice = true;
-                          ename = true;
-                          ebid = true;
-                        });
-                      }
-                      if (details.text.isNotEmpty &&
-                          price.text.isEmpty &&
-                          name.text.isEmpty &&
-                          bid.text.isEmpty) {
-                        setState(() {
-                          edetails = false;
-                          eprice = true;
-                          ename = true;
-                          ebid = true;
-                        });
-                      }
-                      if (details.text.isEmpty &&
-                          price.text.isNotEmpty &&
-                          name.text.isEmpty &&
-                          bid.text.isEmpty) {
-                        setState(() {
-                          edetails = true;
-                          eprice = false;
-                          ename = true;
-                          ebid = true;
-                        });
-                      }
-                      if (details.text.isEmpty &&
-                          price.text.isEmpty &&
-                          name.text.isNotEmpty &&
-                          bid.text.isEmpty) {
-                        setState(() {
-                          edetails = true;
-                          eprice = true;
-                          ename = false;
-                          ebid = true;
-                        });
-                      }
-                      if (details.text.isEmpty &&
-                          price.text.isEmpty &&
-                          name.text.isEmpty &&
-                          bid.text.isNotEmpty) {
-                        setState(() {
-                          edetails = true;
-                          eprice = true;
-                          ename = true;
-                          ebid = false;
-                        });
-                      } else if (details.text.isEmpty && bid.text.isEmpty) {
-                        setState(() {
-                          edetails = true;
-                          ebid = true;
-                        });
-                      } else if (details.text.isEmpty && name.text.isEmpty) {
-                        setState(() {
-                          edetails = true;
-                          ename = true;
-                        });
-                      } else if (details.text.isEmpty && price.text.isEmpty) {
-                        setState(() {
-                          edetails = true;
-                          eprice = true;
-                        });
-                      } else if (details.text.isEmpty &&
-                          price.text.isEmpty &&
-                          bid.text.isEmpty) {
-                        setState(() {
-                          edetails = true;
-                          eprice = true;
-                          ebid = true;
-                        });
-                      } else if (details.text.isEmpty &&
-                          price.text.isEmpty &&
-                          name.text.isEmpty) {
-                        setState(() {
-                          edetails = true;
-                          eprice = true;
-                          ename = true;
-                        });
-                      } else if (bid.text.isNotEmpty &&
-                          details.text.isNotEmpty &&
-                          price.text.isNotEmpty &&
-                          bid.text.isNotEmpty) {
-                        setState(() {
-                          ename = false;
-                          edetails = false;
-                          eprice = false;
-                          // uploading=true;
-                          ebid = false;
-                        });
-                        showDialog(
-                              context: context,
-                              barrierDismissible: false,
-                              builder: (context) {
-                                return AlertDialog(
-                                  content: Container(
-                                    height: 180,
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                     LottieBuilder.asset('images/upload.json',
-                                     height: 100,
-                                     ),
-                                     SizedBox(height: 5,),
-                                     _buildSendFileStatus(task!),
-                                    ])
-                                  )
-                                );
-                              });
-                        String imageUrl = await uploadImage(File(file!.path!));
-                        await prodcutUpload(
-                          name.text,
-                          details.text,
-                          price.text,
-                          bid.text,
-                          valuechanges!,
-                          imageUrl,
-                        );
-                        Get.back();
-                        // setState(() {
-                        //   uploading = false;
-                        // });
-                      }
-                    },
-                    child: Container(
-                      height: 50.0,
-                      width: 140.0,
-                      decoration: BoxDecoration(
-                        color: Color.fromARGB(255, 12, 77, 131),
-                        borderRadius: BorderRadius.circular(12.0),
-                      ),
+              uploading
+                  ? _buildSendFileStatus(task!)
+                  : Padding(
+                      padding: const EdgeInsets.all(20.0),
                       child: Center(
-                        child: Text(
-                          "Upload Product",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18.0,
+                        child: InkWell(
+                          onTap: () async {
+                            if (details.text.isEmpty &&
+                                price.text.isEmpty &&
+                                name.text.isEmpty &&
+                                bid.text.isEmpty) {
+                              setState(() {
+                                edetails = true;
+                                eprice = true;
+                                ename = true;
+                                ebid = true;
+                              });
+                            }
+                            if (details.text.isNotEmpty &&
+                                price.text.isEmpty &&
+                                name.text.isEmpty &&
+                                bid.text.isEmpty) {
+                              setState(() {
+                                edetails = false;
+                                eprice = true;
+                                ename = true;
+                                ebid = true;
+                              });
+                            }
+                            if (details.text.isEmpty &&
+                                price.text.isNotEmpty &&
+                                name.text.isEmpty &&
+                                bid.text.isEmpty) {
+                              setState(() {
+                                edetails = true;
+                                eprice = false;
+                                ename = true;
+                                ebid = true;
+                              });
+                            }
+                            if (details.text.isEmpty &&
+                                price.text.isEmpty &&
+                                name.text.isNotEmpty &&
+                                bid.text.isEmpty) {
+                              setState(() {
+                                edetails = true;
+                                eprice = true;
+                                ename = false;
+                                ebid = true;
+                              });
+                            }
+                            if (details.text.isEmpty &&
+                                price.text.isEmpty &&
+                                name.text.isEmpty &&
+                                bid.text.isNotEmpty) {
+                              setState(() {
+                                edetails = true;
+                                eprice = true;
+                                ename = true;
+                                ebid = false;
+                              });
+                            } else if (details.text.isEmpty &&
+                                bid.text.isEmpty) {
+                              setState(() {
+                                edetails = true;
+                                ebid = true;
+                              });
+                            } else if (details.text.isEmpty &&
+                                name.text.isEmpty) {
+                              setState(() {
+                                edetails = true;
+                                ename = true;
+                              });
+                            } else if (details.text.isEmpty &&
+                                price.text.isEmpty) {
+                              setState(() {
+                                edetails = true;
+                                eprice = true;
+                              });
+                            } else if (details.text.isEmpty &&
+                                price.text.isEmpty &&
+                                bid.text.isEmpty) {
+                              setState(() {
+                                edetails = true;
+                                eprice = true;
+                                ebid = true;
+                              });
+                            } else if (details.text.isEmpty &&
+                                price.text.isEmpty &&
+                                name.text.isEmpty) {
+                              setState(() {
+                                edetails = true;
+                                eprice = true;
+                                ename = true;
+                              });
+                            } else if (bid.text.isNotEmpty &&
+                                details.text.isNotEmpty &&
+                                price.text.isNotEmpty &&
+                                bid.text.isNotEmpty) {
+                              setState(() {
+                                ename = false;
+                                edetails = false;
+                                eprice = false;
+                                // uploading=true;
+                                ebid = false;
+                              });
+                              showDialog(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                        content: Container(
+                                            height: 180,
+                                            child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  LottieBuilder.asset(
+                                                    'images/upload.json',
+                                                    height: 100,
+                                                  ),
+                                                  SizedBox(
+                                                    height: 5,
+                                                  ),
+                                                  _buildSendFileStatus(task!),
+                                                ])));
+                                  });
+                              String imageUrl =
+                                  await uploadImage(File(file!.path!));
+                              await prodcutUpload(
+                                name.text,
+                                details.text,
+                                price.text,
+                                bid.text,
+                                valuechanges!,
+                                imageUrl,
+                                userData1['username'],
+                              );
+                              Get.back();
+                              // setState(() {
+                              //   uploading = false;
+                              // });
+                            }
+                          },
+                          child: Container(
+                            height: 50.0,
+                            width: 140.0,
+                            decoration: BoxDecoration(
+                              color: Color.fromARGB(255, 12, 77, 131),
+                              borderRadius: BorderRadius.circular(12.0),
+                            ),
+                            child: Center(
+                              child: Text(
+                                "Upload Product",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18.0,
+                                ),
+                              ),
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ),
-              ),
               // end
             ],
           ),
@@ -457,7 +496,8 @@ class _UploadingPageState extends State<UploadingPage> {
       ),
     );
   }
-   Widget _buildSendFileStatus(UploadTask task) => StreamBuilder<TaskSnapshot>(
+
+  Widget _buildSendFileStatus(UploadTask task) => StreamBuilder<TaskSnapshot>(
         stream: task.snapshotEvents,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
@@ -481,7 +521,9 @@ class _UploadingPageState extends State<UploadingPage> {
                     ),
                   ),
                 ),
-                SizedBox(width: 5,),
+                SizedBox(
+                  width: 5,
+                ),
                 Text(
                   '$percentage%',
                   style: TextStyle(fontWeight: FontWeight.bold),
