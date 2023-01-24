@@ -651,7 +651,7 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                               color: Colors.grey,
                             ))),
                             child: Icon(
-                              Icons.favorite_border,
+                              Icons.bookmark,
                             ),
                           );
                         }
@@ -780,7 +780,7 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                                   : CupertinoIcons.bookmark,
                               color: snapshot.data?['likes'].contains(
                                       FirebaseAuth.instance.currentUser!.uid)
-                                  ? Colors.yellow
+                                  ? Color.fromARGB(255, 253, 232, 37)
                                   : Colors.black,
                             ),
                           ),

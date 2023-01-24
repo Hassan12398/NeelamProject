@@ -11,6 +11,7 @@ import 'package:nelaamproject/drawer/sellingitem.dart';
 import 'package:nelaamproject/frontend/screens/mainbottombar.dart';
 import 'package:nelaamproject/frontend/screens/selling.dart';
 import 'package:nelaamproject/frontend/screens/welcome.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,11 +24,21 @@ void main() async {
           //     appId: "1:1001240436735:web:17e9a30bfbccfd42d391ca")
           )
       .then((value) => Get.put(AuthFunction()));
+  initRecorder();
   SystemChrome.setPreferredOrientations(
     [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
   ).then(
     (_) => runApp(const MyApp()),
   );
+}
+
+Future initRecorder() async {
+  final status = await Permission.microphone.request();
+  if (status != PermissionStatus.granted) {
+    throw 'permission no granted';
+  }
+  // await recorder.openRecorder();
+  // recorder.setSubscriptionDuration(Duration(milliseconds: 500));
 }
 
 class MyApp extends StatelessWidget {

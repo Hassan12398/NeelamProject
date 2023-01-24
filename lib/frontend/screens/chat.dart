@@ -73,7 +73,15 @@ class _chatPageState extends State<chatPage> {
                     AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>>
                         snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return CircularProgressIndicator();
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          height: 250,
+                        ),
+                        Center(child: CircularProgressIndicator()),
+                      ],
+                    );
                   }
                   return ListView.builder(
                       physics: NeverScrollableScrollPhysics(),

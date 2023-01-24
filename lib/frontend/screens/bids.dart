@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:nelaamproject/frontend/screens/bid_show.dart';
 import 'package:nelaamproject/frontend/screens/itmedetails.dart';
 
 class BidsPage extends StatefulWidget {
@@ -59,30 +60,20 @@ class _BidsPageState extends State<BidsPage> {
                         itemCount: snapshot.data!.docs.length,
                         itemBuilder: (context, index) {
                           var snap = snapshot.data!.docs[index].data();
-                          return GestureDetector(
-                            onTap: () {
-                              Get.to(
-                                  ItemDetailsPage(
-                                    bidL: snap['bids'],
-                                    name: snap['Product Name'],
-                                    uid: snap['uid'],
-                                    bidlength: snap['bids'].length,
-                                    bid: snap['Minimum Bid'],
-                                    imageUrl: snap['Product pic'],
-                                    postId: snap['postId'],
-                                    details: snap['Product Details'],
-                                    rating: snap['rating'],
-                                    reviews: snap['reviews'].length,
-                                    price: snap['Price'],
-                                    status: snap['bid on'],
-                                  ),
-                                  transition: Transition.rightToLeft);
-                            },
-                            child: BidConst(
-                              url: snap['Product pic'],
-                              bid: snap['bids'].length,
-                              postId: snap['postId'],
-                            ),
+                          return BidConst(
+                            productname: snap['Product Name'],
+                            url: snap['Product pic'],
+                            bid: snap['bids'].length,
+                            postId: snap['postId'],
+                            bidL: snap['bids'],
+                            name: snap['Product Name'],
+                            uid: snap['uid'],
+                            bidP: snap['Minimum Bid'],
+                            details: snap['Product Details'],
+                            rating: snap['rating'],
+                            reviews: snap['reviews'].length,
+                            price: snap['Price'],
+                            status: snap['bid on'],
                           );
                         });
                   }),
@@ -99,12 +90,32 @@ class _BidsPageState extends State<BidsPage> {
 class BidConst extends StatefulWidget {
   String url;
   String postId;
+  var bidL;
+  var name;
+  String productname;
+  var bidP;
+  var details;
+  var reviews;
+  var status;
+  var price;
+  var rating;
+  var uid;
   int bid;
   BidConst({
     Key? key,
     required this.postId,
+    required this.productname,
     required this.url,
     required this.bid,
+    required this.bidL,
+    required this.bidP,
+    required this.details,
+    required this.name,
+    required this.price,
+    required this.rating,
+    required this.reviews,
+    required this.status,
+    required this.uid,
   }) : super(
           key: key,
         );
@@ -130,17 +141,34 @@ class _BidConstState extends State<BidConst> {
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0),
-            child: Container(
-                height: 200.0,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: Color.fromARGB(255, 12, 77, 131),
+          GestureDetector(
+            onTap: () {
+              Get.to(ItemDetailsPage(
+                  bid: widget.bidP,
+                  name: widget.name,
+                  imageUrl: widget.url,
+                  price: widget.price,
+                  details: widget.details,
+                  bidlength: widget.bid,
+                  status: widget.status,
+                  postId: widget.postId,
+                  bidL: widget.bidL,
+                  rating: widget.rating,
+                  reviews: widget.reviews,
+                  uid: widget.uid));
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12.0),
+              child: Container(
+                  height: 200.0,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Color.fromARGB(255, 12, 77, 131),
+                    ),
                   ),
-                ),
-                child: Image.network(widget.url, fit: BoxFit.cover)),
+                  child: Image.network(widget.url, fit: BoxFit.cover)),
+            ),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -200,9 +228,20 @@ class _BidConstState extends State<BidConst> {
                         shrinkWrap: true,
                         itemBuilder: (context, index) {
                           var snap = snapshot.data!.docs[index].data();
-                          return BidderConst(
-                            name: snap['username'],
-                            price: snap['bid price'],
+                          return GestureDetector(
+                            onTap: () {
+                              Get.to(
+                                  bid_Show(
+                                    product: widget.productname,
+                                    uid: snap['uid'],
+                                    postId: widget.postId,
+                                  ),
+                                  transition: Transition.rightToLeft);
+                            },
+                            child: BidderConst(
+                              name: snap['username'],
+                              price: snap['bid price'],
+                            ),
                           );
                         });
                   }),

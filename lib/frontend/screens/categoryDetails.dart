@@ -37,10 +37,15 @@ class _CategoryDetailsState extends State<CategoryDetails> {
                 .snapshots(),
             builder: ((context,
                 AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
+              if (!snapshot.hasData) {
                 return Center(
                     child: CircularProgressIndicator(
                   color: Color.fromARGB(255, 30, 76, 106),
+                ));
+              } else if (snapshot.data!.docs.length == 0) {
+                return Center(
+                    child: Text(
+                  'There is no products available for this category!',
                 ));
               } else {
                 return GridView.builder(

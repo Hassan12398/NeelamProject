@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:nelaamproject/frontend/screens/search.dart';
 
 import 'categoryDetails.dart';
 import 'drawer.dart';
@@ -104,27 +105,59 @@ class _SellingPageState extends State<SellingPage> {
           children: [
             // search bar
             Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: TextField(
-                decoration: InputDecoration(
-                  isDense: true,
-                  fillColor: Colors.white,
-                  filled: true,
-                  hintText: 'What are you looking for ?',
-                  hintStyle: TextStyle(
-                    color: Colors.black,
-                  ),
-                  suffixIcon: Icon(
-                    Icons.search,
-                    color: Colors.black,
-                    size: 22.0,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.0),
-                  ),
-                ),
-              ),
-            ),
+                padding: const EdgeInsets.all(20.0),
+                child: OpenContainer(
+                    closedColor: Colors.transparent,
+                    middleColor: Color.fromARGB(255, 0, 0, 0),
+                    openColor: Color.fromARGB(255, 0, 0, 0),
+                    closedShape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6)),
+                    openShape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6)),
+                    closedElevation: 5.0,
+                    transitionDuration: Duration(
+                      milliseconds: 500,
+                    ),
+                    transitionType: ContainerTransitionType.fade,
+                    openBuilder: (_, __) {
+                      return SearchPage();
+                    },
+                    closedBuilder: (_, __) {
+                      return GestureDetector(
+                        onTap: __,
+                        child: Container(
+                          height: 55.0,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(14.0),
+                            color: Colors.white,
+                            border: Border.all(
+                              color: Color.fromARGB(255, 30, 76, 106),
+                            ),
+                          ),
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 12.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "What are you looking for ?",
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                Icon(
+                                  Icons.search,
+                                  color: Colors.black,
+                                  size: 22.0,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    })),
             // top deals
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -244,7 +277,7 @@ class _SellingPageState extends State<SellingPage> {
                                         rating: snap['rating'],
                                         reviews: snap['reviews'].length,
                                         price: snap['Price'],
-                                        status:  snap['bid on'],
+                                        status: snap['bid on'],
                                       );
                                     },
                                     closedBuilder: (_, __) {
@@ -476,37 +509,48 @@ class TopDealsConst extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => CategoryDetails(categoryName: title),
-          ),
-        );
-      },
-      child: Padding(
+    return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
         child: Column(
           children: [
-            Container(
-              height: 120,
-              width: 140,
-              decoration: BoxDecoration(
-                  color: Color.fromARGB(255, 255, 248, 190),
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Color.fromARGB(255, 84, 83, 83),
-                      blurRadius: 2,
-                      spreadRadius: 1,
-                      offset: Offset(-1, 5),
-                    )
-                  ]),
-              child: Center(
-                child: Image.asset("images/$image.png", height: 80.0),
-              ),
-            ),
+            OpenContainer(
+                closedColor: Colors.transparent,
+                middleColor: Color.fromARGB(255, 0, 0, 0),
+                openColor: Color.fromARGB(255, 0, 0, 0),
+                closedShape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(80)),
+                openShape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(80)),
+                closedElevation: 5.0,
+                transitionDuration: Duration(
+                  milliseconds: 500,
+                ),
+                transitionType: ContainerTransitionType.fade,
+                openBuilder: (_, __) {
+                  return CategoryDetails(categoryName: title);
+                },
+                closedBuilder: (_, __) {
+                  return InkWell(
+                      onTap: __,
+                      child: Container(
+                        height: 120,
+                        width: 140,
+                        decoration: BoxDecoration(
+                            color: Color.fromARGB(255, 255, 248, 190),
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Color.fromARGB(255, 84, 83, 83),
+                                blurRadius: 2,
+                                spreadRadius: 1,
+                                offset: Offset(-1, 5),
+                              )
+                            ]),
+                        child: Center(
+                          child: Image.asset("images/$image.png", height: 80.0),
+                        ),
+                      ));
+                }),
             SizedBox(height: 8.0),
             Text(
               title,
@@ -515,8 +559,6 @@ class TopDealsConst extends StatelessWidget {
               ),
             ),
           ],
-        ),
-      ),
-    );
+        ));
   }
 }
