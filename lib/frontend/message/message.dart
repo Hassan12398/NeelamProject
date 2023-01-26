@@ -937,7 +937,7 @@ class _message_screenState extends State<message_screen>
                             ),
                             Container(
                               height: 50,
-                              width: 300,
+                              width: 270,
                               color: Colors.transparent,
                               child: Row(
                                 mainAxisAlignment:
@@ -958,7 +958,7 @@ class _message_screenState extends State<message_screen>
                                   LottieBuilder.asset(
                                     "images/record1.json",
                                     // height: 300,
-                                    width: 200,
+                                    width: 170,
                                   ),
                                   StreamBuilder<RecordingDisposition>(
                                       stream: recorder.onProgress,

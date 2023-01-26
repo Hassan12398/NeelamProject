@@ -1,10 +1,11 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, unused_local_variable
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, unused_local_variable, dead_code
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:nelaamproject/frontend/message/message.dart';
 
 class chatPage extends StatefulWidget {
@@ -17,6 +18,25 @@ class chatPage extends StatefulWidget {
 class _chatPageState extends State<chatPage> {
   @override
   Widget build(BuildContext context) {
+    final now = DateTime.now();
+    // UploadTask? uploa;
+    final today = DateTime(now.year, now.month, now.day);
+    final yesterday = DateTime(now.year, now.month, now.day - 1);
+    final tomorrow = DateTime(now.year, now.month, now.day + 1);
+
+    String dateToday(DateTime Time) {
+      String time = '';
+      final dateToCheck = Time;
+      final aDate =
+          DateTime(dateToCheck.year, dateToCheck.month, dateToCheck.day);
+      if (aDate == today) {
+        return time = DateFormat.jm().format(Time);
+      } else {
+        return time = DateFormat.yMd().format(Time);
+      }
+      return time;
+    }
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -129,13 +149,74 @@ class _chatPageState extends State<chatPage> {
                                       horizontal: 8, vertical: 3),
                                   child: Column(
                                     children: [
-                                      Text(
-                                        snap['username'],
-                                        style: TextStyle(
-                                          fontSize: 17,
-                                          fontWeight: FontWeight.bold,
+                                      Container(
+                                        width:
+                                            MediaQuery.of(context).size.width -
+                                                135,
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              snap['username'],
+                                              textAlign: TextAlign.start,
+                                              style: TextStyle(
+                                                fontSize: 17,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            Text(
+                                                dateToday(snap['time']
+                                                        .toDate())
+                                                    .toString(),
+                                                style: TextStyle(
+                                                    color:
+                                                        snap['lastMessage'] ==
+                                                                'bid'
+                                                            ? Color.fromARGB(
+                                                                255,
+                                                                30,
+                                                                76,
+                                                                106)
+                                                            : Colors.grey,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 13)),
+                                          ],
                                         ),
-                                      )
+                                      ),
+                                      snap['lastMessage'] == 'bid'
+                                          ? Container(
+                                              height: 30,
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width -
+                                                  138,
+                                              color: Colors.transparent,
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Text(
+                                                    '${snap['username']} Accepted your bid request!',
+                                                    textAlign: TextAlign.start,
+                                                    style: TextStyle(
+                                                      fontSize: 12,
+                                                      color: Colors.grey,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                  CircleAvatar(
+                                                    radius: 10,
+                                                    backgroundColor:
+                                                        Color.fromARGB(
+                                                            255, 30, 76, 106),
+                                                  )
+                                                ],
+                                              ),
+                                            )
+                                          : Container(),
                                     ],
                                   ),
                                 )

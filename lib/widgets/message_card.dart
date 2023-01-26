@@ -323,7 +323,7 @@ class _audioCardState extends State<audioCard> {
     return Column(
       children: [
         Bubble(
-          margin: BubbleEdges.only(top: 10, left: 60),
+          margin: BubbleEdges.only(top: 10, left: 46),
           alignment: Alignment.topRight,
           nipWidth: 15,
           nipHeight: 10,
@@ -504,7 +504,7 @@ class _audioCard1State extends State<audioCard1> {
     return Column(
       children: [
         Bubble(
-          margin: BubbleEdges.only(top: 10, right: 60),
+          margin: BubbleEdges.only(top: 10, right: 46),
           alignment: Alignment.topLeft,
           nipWidth: 15,
           nipHeight: 10,

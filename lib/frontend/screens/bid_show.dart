@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:nelaamproject/Widgets/snackbar.dart';
 import 'package:uuid/uuid.dart';
 
@@ -107,7 +108,7 @@ class _bid_ShowState extends State<bid_Show> {
           .doc(postId)
           .set({
         'message':
-            'Hi you send me bid on my $product and i accepted your bid request if you want to buy my product you can contact me',
+            'Hi you send me bid on my $product product and i accepted your bid request if you want to buy my product you can contact me',
         'chatId': uid,
         'uid': FirebaseAuth.instance.currentUser!.uid,
         'name': name1,
@@ -120,12 +121,12 @@ class _bid_ShowState extends State<bid_Show> {
           .collection('users')
           .doc(uid)
           .collection('Chatrooms')
-          .doc(uid)
+          .doc(FirebaseAuth.instance.currentUser!.uid)
           .collection('messages')
           .doc(postId)
           .set({
         'message':
-            'Hi you send me bid on my $product and i accepted your bid request if you want to buy my product you can contact me',
+            'Hi you send me bid on my $product product and i accepted your bid request if you want to buy my product you can contact me',
         'chatId': uid,
         'uid': FirebaseAuth.instance.currentUser!.uid,
         'read': false,
@@ -244,7 +245,15 @@ class _bid_ShowState extends State<bid_Show> {
                             Row(
                               children: [
                                 GestureDetector(
-                                  onTap: () {
+                                  onTap: () async {
+                                    showDialog(
+                                        context: context,
+                                        barrierDismissible: false,
+                                        builder: (context) => Center(
+                                              child:
+                                                  CircularProgressIndicator(),
+                                            ));
+
                                     CreateChatRoom(
                                         userData['uid'],
                                         userData1['username'],
@@ -253,6 +262,95 @@ class _bid_ShowState extends State<bid_Show> {
                                         userData['profileUrl'],
                                         widget.product,
                                         context);
+                                    await FirebaseFirestore.instance
+                                        .collection('Products')
+                                        .doc(widget.postId)
+                                        .update({
+                                      'bids':
+                                          FieldValue.arrayRemove([snap['uid']])
+                                    });
+                                    await FirebaseFirestore.instance
+                                        .collection('Products')
+                                        .doc(widget.postId)
+                                        .collection('bids')
+                                        .doc(snap['uid'])
+                                        .delete();
+
+                                    showDialog(
+                                        context: context,
+                                        barrierDismissible: false,
+                                        builder: (context) {
+                                          return AlertDialog(
+                                              content: Container(
+                                                  height: 180,
+                                                  child: Column(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        CircleAvatar(
+                                                          radius: 28,
+                                                          backgroundColor:
+                                                              Colors.green,
+                                                          child: Icon(
+                                                            Icons.check,
+                                                            color: Colors.white,
+                                                            size: 50,
+                                                          ),
+                                                        ),
+                                                        SizedBox(
+                                                          height: 5,
+                                                        ),
+                                                        Text(
+                                                          'Your Message send to the Buyer wait until he replied to you',
+                                                          textAlign:
+                                                              TextAlign.center,
+                                                          style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          ),
+                                                        ),
+                                                        SizedBox(
+                                                          height: 5,
+                                                        ),
+                                                        GestureDetector(
+                                                          onTap: () {
+                                                            Get.back();
+                                                            Get.back();
+                                                          },
+                                                          child: Container(
+                                                            height: 40,
+                                                            width: 120,
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              color:
+                                                                  Colors.blue,
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          8),
+                                                            ),
+                                                            child: Center(
+                                                              child: Text(
+                                                                'Dismiss',
+                                                                style:
+                                                                    TextStyle(
+                                                                  color: Colors
+                                                                      .white,
+                                                                  fontSize: 17,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ])));
+                                        });
                                   },
                                   child: CircleAvatar(
                                     radius: 17.0,
