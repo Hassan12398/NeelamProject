@@ -437,8 +437,7 @@ class _SellingPageState extends State<SellingPage> {
                                                 color: Colors.transparent,
                                                 child: Row(
                                                   mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
+                                                      MainAxisAlignment.start,
                                                   children: [
                                                     Padding(
                                                       padding: const EdgeInsets
@@ -446,19 +445,6 @@ class _SellingPageState extends State<SellingPage> {
                                                           horizontal: 5),
                                                       child: Text(
                                                         '$bid Bids',
-                                                        style: TextStyle(
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            color: Colors.grey,
-                                                            fontSize: 13),
-                                                      ),
-                                                    ),
-                                                    Padding(
-                                                      padding: const EdgeInsets
-                                                              .symmetric(
-                                                          horizontal: 5),
-                                                      child: Text(
-                                                        '${snap['rating']}.0⭐',
                                                         style: TextStyle(
                                                             fontWeight:
                                                                 FontWeight.bold,

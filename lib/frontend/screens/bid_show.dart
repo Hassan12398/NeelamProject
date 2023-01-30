@@ -9,9 +9,11 @@ class bid_Show extends StatefulWidget {
   String postId;
   String product;
   String uid;
+  List bid;
   bid_Show(
       {super.key,
       required this.postId,
+      required this.bid,
       required this.uid,
       required this.product});
 
@@ -253,7 +255,6 @@ class _bid_ShowState extends State<bid_Show> {
                                               child:
                                                   CircularProgressIndicator(),
                                             ));
-
                                     CreateChatRoom(
                                         userData['uid'],
                                         userData1['username'],
@@ -269,11 +270,27 @@ class _bid_ShowState extends State<bid_Show> {
                                       'bids':
                                           FieldValue.arrayRemove([snap['uid']])
                                     });
+                                    for (var i = 0;
+                                        i < widget.bid.length;
+                                        i++) {
+                                      FirebaseFirestore.instance
+                                          .collection("Products")
+                                          .doc(widget.postId)
+                                          .collection("bids")
+                                          .doc(widget.bid[i])
+                                          .delete();
+                                    }
                                     await FirebaseFirestore.instance
-                                        .collection('Products')
+                                        .collection("users")
+                                        .doc(FirebaseAuth
+                                            .instance.currentUser!.uid)
+                                        .update({
+                                      "posts": FieldValue.arrayRemove(
+                                          [widget.postId]),
+                                    });
+                                    await FirebaseFirestore.instance
+                                        .collection("Products")
                                         .doc(widget.postId)
-                                        .collection('bids')
-                                        .doc(snap['uid'])
                                         .delete();
 
                                     showDialog(

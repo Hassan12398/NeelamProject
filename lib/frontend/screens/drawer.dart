@@ -1,9 +1,10 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_unnecessary_containers
 
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nelaamproject/backend/auth/authFunctions.dart';
+import 'package:nelaamproject/frontend/bid/bid_screen.dart';
+import 'package:nelaamproject/frontend/screens/bids.dart';
 import 'package:nelaamproject/frontend/screens/welcome.dart';
 
 import '../../drawer/bidsoffers.dart';
@@ -18,7 +19,8 @@ class DrawerPage extends StatefulWidget {
   String name;
   String email;
   String url;
-   DrawerPage({super.key,required this.url,required this.email,required this.name});
+  DrawerPage(
+      {super.key, required this.url, required this.email, required this.name});
 
   @override
   State<DrawerPage> createState() => _DrawerPageState();
@@ -28,7 +30,7 @@ class _DrawerPageState extends State<DrawerPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:Color.fromARGB(255, 30, 76, 106),
+      backgroundColor: Color.fromARGB(255, 30, 76, 106),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -125,7 +127,7 @@ class _DrawerPageState extends State<DrawerPage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => BidsOffersPage(),
+                      builder: (_) => BidsPage(),
                     ),
                   );
                 },
@@ -167,14 +169,15 @@ class _DrawerPageState extends State<DrawerPage> {
               ),
               ItemsConst(geticon: Icons.star, label: "Rate Us"),
               InkWell(
-                onTap: ()async{
-                  AuthFunction().logout().then((value) {
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context){
-                      return WelcomePage();
-                    }));
-                  });
-                },
-                child: ItemsConst(geticon: Icons.logout, label: "Logout")),
+                  onTap: () async {
+                    AuthFunction().logout().then((value) {
+                      Navigator.pushReplacement(context,
+                          MaterialPageRoute(builder: (context) {
+                        return WelcomePage();
+                      }));
+                    });
+                  },
+                  child: ItemsConst(geticon: Icons.logout, label: "Logout")),
               // end
             ],
           ),

@@ -50,6 +50,14 @@ class _BidsPageState extends State<BidsPage> {
                   builder: (context,
                       AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>>
                           snapshot) {
+                    if (snapshot.data!.docs.length == 0) {
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Center(child: Text('You haven\'t upload any product'))
+                        ],
+                      );
+                    }
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -232,6 +240,7 @@ class _BidConstState extends State<BidConst> {
                             onTap: () {
                               Get.to(
                                   bid_Show(
+                                    bid: widget.bidL,
                                     product: widget.productname,
                                     uid: snap['uid'],
                                     postId: widget.postId,

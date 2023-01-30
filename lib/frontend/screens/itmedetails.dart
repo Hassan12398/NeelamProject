@@ -217,39 +217,7 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                         ),
                       ],
                     ),
-                    SizedBox(
-                      height: 14,
-                    ),
-                    Container(
-                      height: 35,
-                      child: Row(
-                        children: [
-                          SizedBox(
-                            width: 12,
-                          ),
-                          RatingBarIndicator(
-                            rating: widget.rating.toDouble(),
-                            itemBuilder: (context, index) => Icon(
-                              Icons.star,
-                              color: Colors.amber,
-                            ),
-                            itemCount: 5,
-                            itemSize: 20.0,
-                            direction: Axis.horizontal,
-                          ),
-                          SizedBox(
-                            width: 8,
-                          ),
-                          Text(
-                            '${widget.rating}',
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+
                     SizedBox(
                       height: 14,
                     ),
