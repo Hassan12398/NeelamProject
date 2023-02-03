@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nelaamproject/Widgets/snackbar.dart';
+import 'package:nelaamproject/backend/notifications/function.dart';
 import 'package:uuid/uuid.dart';
 
 class bid_Show extends StatefulWidget {
@@ -292,7 +293,10 @@ class _bid_ShowState extends State<bid_Show> {
                                         .collection("Products")
                                         .doc(widget.postId)
                                         .delete();
-
+                                    LocalNotificationService.sendPushMessage(
+                                        "${userData1['username']} accepted your bid",
+                                        "Bid Accept",
+                                        userData['token']);
                                     showDialog(
                                         context: context,
                                         barrierDismissible: false,
@@ -389,6 +393,13 @@ class _bid_ShowState extends State<bid_Show> {
                                         .collection('bids')
                                         .doc(snap['uid'])
                                         .delete();
+                                    await FirebaseFirestore.instance
+                                        .collection('Products')
+                                        .doc(widget.postId)
+                                        .update({
+                                      'bids':
+                                          FieldValue.arrayRemove([snap['uid']])
+                                    });
                                   },
                                   child: CircleAvatar(
                                     radius: 17.0,

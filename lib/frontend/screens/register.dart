@@ -346,7 +346,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        SvgPicture.asset("images/facebook.svg", height: 70.0),
+                        // SvgPicture.asset("images/facebook.svg", height: 70.0),
                         GestureDetector(
                           onTap: () async {
                             bool res =
@@ -356,11 +356,20 @@ class _RegisterPageState extends State<RegisterPage> {
                                   transition: Transition.rightToLeft);
                             }
                           },
-                          child: CircleAvatar(
-                            backgroundColor: Colors.white,
-                            radius: 30.0,
-                            child: SvgPicture.asset("images/google.svg",
-                                height: 50.0),
+                          child: Material(
+                            elevation: 8,
+                            borderRadius: BorderRadius.circular(15),
+                            // shape: CircleBorder(side: BorderSide.none),
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 60),
+                              child: CircleAvatar(
+                                backgroundColor: Colors.white,
+                                radius: 30.0,
+                                child: SvgPicture.asset("images/google.svg",
+                                    height: 40.0),
+                              ),
+                            ),
                           ),
                         ),
                       ],

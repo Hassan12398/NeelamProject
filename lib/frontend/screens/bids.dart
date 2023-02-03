@@ -50,18 +50,18 @@ class _BidsPageState extends State<BidsPage> {
                   builder: (context,
                       AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>>
                           snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [Center(child: CircularProgressIndicator())],
+                      );
+                    }
                     if (snapshot.data!.docs.length == 0) {
                       return Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Center(child: Text('You haven\'t upload any product'))
                         ],
-                      );
-                    }
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [Center(child: CircularProgressIndicator())],
                       );
                     }
                     return ListView.builder(

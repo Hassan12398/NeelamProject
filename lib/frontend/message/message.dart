@@ -9,6 +9,7 @@ import 'package:floating_action_bubble/floating_action_bubble.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:nelaamproject/backend/notifications/function.dart';
 import 'package:permission_handler/permission_handler.dart';
 // import 'package:bubble/bubble.dart';
 import 'package:flutter/scheduler.dart';
@@ -191,6 +192,11 @@ class _message_screenState extends State<message_screen>
       sending = true;
       String postId = Uuid().v1();
       String ImageUrl = await sendImage(image);
+      LocalNotificationService.sendPushImage(
+          "${userData1["username"]} send a image",
+          "Image Recieved",
+          userData["token"],
+          ImageUrl);
       await FirebaseFirestore.instance
           .collection('users')
           .doc(FirebaseAuth.instance.currentUser!.uid)
@@ -375,6 +381,11 @@ class _message_screenState extends State<message_screen>
       String postId = Uuid().v1();
       String videopath = await SendVideo(videoUrl);
       String Thumbnail = await SuploadImageVideo(videoUrl);
+      LocalNotificationService.sendPushImage(
+          "${userData1["username"]} send a Video",
+          "Video Recieved",
+          userData["token"],
+          Thumbnail);
       await FirebaseFirestore.instance
           .collection('users')
           .doc(uid)
@@ -550,6 +561,10 @@ class _message_screenState extends State<message_screen>
                 backgroundColor: Color.fromARGB(255, 45, 79, 106),
                 onPressed: () async {
                   // Feedback.forTap(context);
+                  LocalNotificationService.sendPushMessage(
+                      _message.text,
+                      "${userData1["username"]} send a message",
+                      userData["token"]);
 
                   SendMessage(
                       widget.uid,
@@ -607,6 +622,12 @@ class _message_screenState extends State<message_screen>
                         });
                         String voiceUrl =
                             await SendVoice1(File(path.toString()));
+                        LocalNotificationService.sendPushAudio(
+                          "Voice Message",
+                          "${userData1['username']} send a voice message",
+                          "${userData["token"]}",
+                          "https://icons.iconarchive.com/icons/flat-icons.com/flat/512/Headphone-icon.png",
+                        );
                         SendVoice(
                           widget.uid,
                           voiceUrl,
@@ -614,6 +635,7 @@ class _message_screenState extends State<message_screen>
                           userData['username'],
                           '$twomin:$twomsec',
                         );
+
                         // Fluttertoast.showToast(
                         //     msg: 'Voice Sucessfully Sended!!',
                         //     backgroundColor: kPrimaryColor);
@@ -634,31 +656,27 @@ class _message_screenState extends State<message_screen>
                     items: <Bubble>[
                       // Floating action menu item
                       Bubble(
-                        title: "Photo",
-                        iconColor: Colors.white,
-                        bubbleColor: Color.fromARGB(255, 30, 76, 106),
-                        icon: CupertinoIcons.photo,
-                        titleStyle:
-                            TextStyle(fontSize: 16, color: Colors.white),
-                        onPress: () async {
-                          _animationController.reverse();
-                          setState(() {
-                            select = false;
-                            sending = true;
-                          });
-                          final result = await FilePicker.platform.pickFiles(
-                            type: FileType.image,
-                          );
-                          setState(() {
-                            file = result!.files.first;
-                            sending = true;
-                          });
-                          await login();
-                          // setState(() {
-                          //   sending = false;
-                          // });
-                        },
-                      ),
+                          title: "Photo",
+                          iconColor: Colors.white,
+                          bubbleColor: Color.fromARGB(255, 30, 76, 106),
+                          icon: CupertinoIcons.photo,
+                          titleStyle:
+                              TextStyle(fontSize: 16, color: Colors.white),
+                          onPress: () async {
+                            _animationController.reverse();
+                            setState(() {
+                              select = false;
+                              sending = true;
+                            });
+                            final result = await FilePicker.platform.pickFiles(
+                              type: FileType.image,
+                            );
+                            setState(() {
+                              file = result!.files.first;
+                              sending = true;
+                            });
+                            await login();
+                          }),
                       // Floating action menu item
                       Bubble(
                         title: "Video",

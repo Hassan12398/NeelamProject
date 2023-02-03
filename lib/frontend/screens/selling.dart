@@ -242,7 +242,7 @@ class _SellingPageState extends State<SellingPage> {
                                   crossAxisCount: 2,
                                   crossAxisSpacing: 7,
                                   mainAxisSpacing: 18,
-                                  childAspectRatio: 0.85),
+                                  childAspectRatio: 0.84),
                           itemCount: snapshot.data!.docs.length,
                           itemBuilder: (context, index) {
                             var snap = snapshot.data!.docs[index].data();

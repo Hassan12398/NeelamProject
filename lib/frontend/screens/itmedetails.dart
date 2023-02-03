@@ -9,6 +9,8 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
 import 'package:nelaamproject/frontend/bid/bid_screen.dart';
 import 'package:nelaamproject/frontend/message/message.dart';
+import 'package:nelaamproject/frontend/screens/buynow_show.dart';
+import 'package:nelaamproject/backend/notifications/function.dart';
 import 'package:nelaamproject/widgets/snackbar.dart';
 
 import 'cart.dart';
@@ -530,6 +532,7 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                         } else {
                           Get.to(
                               bid_screen(
+                                token: userData['token'],
                                 postId: widget.postId,
                                 minBid: int.parse(widget.bid),
                                 price: int.parse(widget.price),
@@ -573,7 +576,165 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                     ),
                   ),
                   InkWell(
-                    onTap: () {},
+                    onTap: () {
+                      if (widget.uid ==
+                          FirebaseAuth.instance.currentUser!.uid) {
+                        Showsnackbar(context,
+                            'You\'re a seller you cannot buy this product');
+                      } else {
+                        showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (_) {
+                            return AlertDialog(
+                              content: Container(
+                                height: 150,
+                                child: Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Icon(
+                                      Icons.error_outline,
+                                      color: Colors.red,
+                                      size: 50,
+                                    ),
+                                    SizedBox(
+                                      height: 3,
+                                    ),
+                                    Text(
+                                      "Are you want to buy this item?",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 20,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 4,
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        // for chatting + deleting product
+                                        InkWell(
+                                          onTap: () async {
+                                            CreateProductChatRoom(
+                                                userData['uid'],
+                                                userData1['username'],
+                                                userData['username'],
+                                                userData1['profileUrl'],
+                                                userData['profileUrl'],
+                                                widget.name,
+                                                context);
+                                            Navigator.pop(context);
+                                            LocalNotificationService
+                                                .sendPushImage(
+                                              "Request to buy",
+                                              "${userData1["username"]} want to buy this product",
+                                              userData["token"],
+                                              widget.imageUrl,
+                                            );
+                                            await FirebaseFirestore.instance
+                                                .collection("Products")
+                                                .doc(widget.postId)
+                                                .delete();
+                                            await FirebaseFirestore.instance
+                                                .collection('Products')
+                                                .doc(widget.postId)
+                                                .collection('bids')
+                                                .snapshots()
+                                                .forEach((querySnapshot) {
+                                              for (QueryDocumentSnapshot docSnapshot
+                                                  in querySnapshot.docs) {
+                                                docSnapshot.reference.delete();
+                                              }
+                                            });
+                                            await FirebaseFirestore.instance
+                                                .collection("users")
+                                                .doc(widget.uid)
+                                                .update({
+                                              "posts": FieldValue.arrayRemove(
+                                                  [widget.postId]),
+                                            });
+                                            Get.back();
+                                            Showsnackbar(
+                                              context,
+                                              'Your chatroom is ready',
+                                            );
+                                            print("Task Complete");
+                                          },
+                                          child: Container(
+                                            height: 40.0,
+                                            width: 100.0,
+                                            decoration: BoxDecoration(
+                                              color: Color.fromARGB(
+                                                  255, 26, 69, 145),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.black26,
+                                                  blurRadius: 4.0,
+                                                  spreadRadius: 4.0,
+                                                ),
+                                              ],
+                                              borderRadius:
+                                                  BorderRadius.circular(10.0),
+                                            ),
+                                            child: Center(
+                                              child: Text(
+                                                "Buy Now",
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Color.fromARGB(
+                                                      255, 250, 250, 250),
+                                                  fontSize: 18.0,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        InkWell(
+                                          onTap: () {
+                                            Navigator.pop(context);
+                                          },
+                                          child: Container(
+                                            height: 40.0,
+                                            width: 100.0,
+                                            decoration: BoxDecoration(
+                                              color: Color.fromARGB(
+                                                  255, 26, 69, 145),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.black26,
+                                                  blurRadius: 4.0,
+                                                  spreadRadius: 4.0,
+                                                ),
+                                              ],
+                                              borderRadius:
+                                                  BorderRadius.circular(10.0),
+                                            ),
+                                            child: Center(
+                                              child: Text(
+                                                "Cancel",
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Color.fromARGB(
+                                                      255, 250, 250, 250),
+                                                  fontSize: 18.0,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      }
+                    },
                     child: Container(
                       height: 40.0,
                       width: 100.0,

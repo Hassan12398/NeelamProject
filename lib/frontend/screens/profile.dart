@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_unnecessary_containers
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_unnecessary_containers, dead_code
 
 import 'dart:io';
 import 'dart:typed_data';
@@ -34,12 +34,15 @@ class _PProfilePageState extends State<PProfilePage> {
   String emailerror = "";
   String profilelink = "";
   // Uint8List? _image;
-
+  ///////////rating lists//////
+  List star1 = [];
+  List star2 = [];
+  List star3 = [];
+  List star4 = [];
+  List star5 = [];
   ///////////////////////
   PlatformFile? file;
-  void selectImage() async {
-    
-  }
+  void selectImage() async {}
 
   var userdata = {};
   @override
@@ -59,6 +62,11 @@ class _PProfilePageState extends State<PProfilePage> {
           await FirebaseFirestore.instance.collection("users").doc(uid).get();
       userdata = usersD.data()!;
       setState(() {
+        star1 = userdata['1 star'];
+        star2 = userdata['2 star'];
+        star3 = userdata['3 star'];
+        star4 = userdata['4 star'];
+        star5 = userdata['5 star'];
         username = userdata["username"];
         profilelink = userdata["profileUrl"];
       });
@@ -69,6 +77,7 @@ class _PProfilePageState extends State<PProfilePage> {
       isLoading = false;
     });
   }
+
   UploadTask? task;
   Future<String> uploadImage(File image) async {
     var uuid = Uuid();
@@ -83,14 +92,93 @@ class _PProfilePageState extends State<PProfilePage> {
     TaskSnapshot taskSnapshot = await task!;
     String downloadUrl = await taskSnapshot.ref.getDownloadURL();
     return downloadUrl;
-  } 
+  }
+
   bool loading = true;
-  Future load()async{
+  Future load() async {
     await Future.delayed(Duration(seconds: 3));
     setState(() {
-      loading=false;
+      loading = false;
     });
   }
+
+  rating() {
+    // if (star5.length == 0 ||
+    //     0 == star2.length ||
+    //     0 == star1.length ||
+    //     0 == star4.length ||
+    //     0 == star3.length) {
+    //   return 0.0;
+    // } else {
+
+    if (star2.length > star1.length &&
+        star2.length > star3.length &&
+        star2.length > star4.length &&
+        star2.length > star5.length) {
+      return 2.0;
+    } else if (star1.length > star2.length &&
+        star1.length > star3.length &&
+        star1.length > star4.length &&
+        star1.length > star5.length) {
+      return 1.0;
+    } else if (star3.length > star2.length &&
+        star3.length > star1.length &&
+        star3.length > star4.length &&
+        star3.length > star5.length) {
+      return 3.0;
+    } else if (star4.length > star3.length &&
+        star4.length > star1.length &&
+        star4.length > star2.length &&
+        star4.length > star5.length) {
+      return 4.0;
+    } else if (star5.length > star3.length &&
+        star5.length > star2.length &&
+        star5.length > star4.length &&
+        star5.length > star1.length) {
+      return 5.0;
+    } else {
+      return 0.0;
+    }
+    if (star1.length != 0) {
+      if (star1.length == star2.length &&
+          star1.length == star3.length &&
+          star1.length == star5.length &&
+          star1.length == star4.length) {
+        return 1.0;
+      }
+    } else if (star2.length != 0) {
+      if (star2.length == star1.length &&
+          star2.length == star3.length &&
+          star2.length == star5.length &&
+          star2.length == star4.length) {
+        return 2.0;
+      }
+    } else if (star3.length != 0) {
+      if (star3.length == star1.length &&
+          star3.length == star2.length &&
+          star3.length == star5.length &&
+          star3.length == star4.length) {
+        return 3.0;
+      }
+    } else if (star4.length != 0) {
+      if (star4.length == star1.length &&
+          star4.length == star2.length &&
+          star4.length == star5.length &&
+          star4.length == star3.length) {
+        return 4.0;
+      } else if (star5.length != 0) {
+        if (star5.length == star1.length &&
+            star5.length == star2.length &&
+            star5.length == star4.length &&
+            star5.length == star3.length) {
+          return 5.0;
+        }
+      }
+    } else {
+      return 0.0;
+    }
+  }
+
   // ending
   @override
   Widget build(BuildContext context) {
@@ -98,20 +186,27 @@ class _PProfilePageState extends State<PProfilePage> {
         ? Scaffold(
             body: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children:[
-              Center(child:isLoading? CircularProgressIndicator():CircularProgressIndicator())
+            children: [
+              Center(
+                  child: isLoading
+                      ? CircularProgressIndicator()
+                      : CircularProgressIndicator())
             ],
           ))
         : Scaffold(
             backgroundColor: Colors.white,
             // appbar
-            
+
             appBar: AppBar(
-              leading: editmod?Container():IconButton(onPressed: () {
-                    setState(() {
-                      editmod = !editmod;
-                    });
-                  }, icon: Icon(Icons.close)),
+              leading: editmod
+                  ? Container()
+                  : IconButton(
+                      onPressed: () {
+                        setState(() {
+                          editmod = !editmod;
+                        });
+                      },
+                      icon: Icon(Icons.close)),
               backgroundColor: Color.fromARGB(255, 30, 76, 106),
               centerTitle: true,
               automaticallyImplyLeading: false,
@@ -148,49 +243,50 @@ class _PProfilePageState extends State<PProfilePage> {
                                 emailerror = "Please Enter Correct E-mail";
                               });
                             } else if (name.text.isEmpty &&
-                                currentemail.text == usermail
-                                ) {
+                                currentemail.text == usermail) {
                               setState(() {
                                 nameerror = "Please Enter Name";
                                 emailerror = "";
                               });
                             } else if (name.text.isEmpty &&
-                                currentemail.text == usermail 
-                                ) {
+                                currentemail.text == usermail) {
                               setState(() {
                                 nameerror = "Please Enter Name";
                                 emailerror = "";
                               });
                             } else if (name.text.isNotEmpty &&
-                                currentemail.text == usermail 
-                                ) {
+                                currentemail.text == usermail) {
                               setState(() {
                                 nameerror = "";
                                 emailerror = "";
                                 editmod = true;
                               });
                               showDialog(
-                              context: context,
-                              barrierDismissible: false,
-                              builder: (context) {
-                                return AlertDialog(
-                                  content: Container(
-                                    height: 180,
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                     LottieBuilder.asset('images/upload.json',
-                                     height: 100,
-                                     ),
-                                     SizedBox(height: 5,),
-                                     _buildSendFileStatus(task!),
-                                    ])
-                                  )
-                                );
-                              });
-                              String imageUrl =file==null?userdata['profileUrl']:
-                                  await uploadImage(File(file!.path!));
+                                  context: context,
+                                  barrierDismissible: false,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                        content: Container(
+                                            height: 180,
+                                            child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  LottieBuilder.asset(
+                                                    'images/upload.json',
+                                                    height: 100,
+                                                  ),
+                                                  SizedBox(
+                                                    height: 5,
+                                                  ),
+                                                  _buildSendFileStatus(task!),
+                                                ])));
+                                  });
+                              String imageUrl = file == null
+                                  ? userdata['profileUrl']
+                                  : await uploadImage(File(file!.path!));
                               await FirebaseFirestore.instance
                                   .collection("users")
                                   .doc(uid)
@@ -281,33 +377,39 @@ class _PProfilePageState extends State<PProfilePage> {
                                       height: 30.0,
                                       // width: 150.0,
                                       child: RatingBarIndicator(
-                            rating: userdata['rating'].toDouble(),
-                            itemBuilder: (context, index) => Icon(
-                              Icons.star,
-                              color: Colors.amber,
-                            ),
-                            itemCount: 5,
-                            itemSize: 20.0,
-                            direction: Axis.horizontal,
-                          ),
+                                        rating: rating().toDouble(),
+                                        itemBuilder: (context, index) => Icon(
+                                          Icons.star,
+                                          color: Colors.amber,
+                                        ),
+                                        itemCount: 5,
+                                        itemSize: 20.0,
+                                        direction: Axis.horizontal,
+                                      ),
                                     ),
                                   ],
                                 ),
                               ),
                               SizedBox(height: 40.0),
                               // response
-                              ProfileConst(
-                                res: "Positive",
-                                getcolor: Colors.green,
-                              ),
-                              ProfileConst(
-                                res: "Neutral",
-                                getcolor: Colors.blue,
-                              ),
-                              ProfileConst(
-                                res: "Negative",
-                                getcolor: Colors.red,
-                              ),
+                              rating() == 4 || rating() == 5
+                                  ? ProfileConst(
+                                      res: "Positive",
+                                      getcolor: Colors.green,
+                                    )
+                                  : Container(),
+                              rating() == 3 || rating() == 2
+                                  ? ProfileConst(
+                                      res: "Neutral",
+                                      getcolor: Colors.blue,
+                                    )
+                                  : Container(),
+                              rating() == 2 || rating() == 1
+                                  ? ProfileConst(
+                                      res: "Negative",
+                                      getcolor: Colors.red,
+                                    )
+                                  : Container(),
                               // end
                             ],
                           ),
@@ -342,19 +444,20 @@ class _PProfilePageState extends State<PProfilePage> {
                                         )
                                       : CircleAvatar(
                                           backgroundColor: Colors.white,
-                                          backgroundImage: FileImage(File(file!.path!)),
+                                          backgroundImage:
+                                              FileImage(File(file!.path!)),
                                           radius: 60,
                                         ),
                                   SizedBox(width: 8.0),
                                   IconButton(
-                                    onPressed: ()async {
+                                    onPressed: () async {
                                       final result =
-                                    await FilePicker.platform.pickFiles(
-                                  type: FileType.image,
-                                );
-                                setState(() {
-                                  file = result!.files.first;
-                                });
+                                          await FilePicker.platform.pickFiles(
+                                        type: FileType.image,
+                                      );
+                                      setState(() {
+                                        file = result!.files.first;
+                                      });
                                     },
                                     icon: Icon(
                                       Icons.camera_alt,
@@ -482,7 +585,8 @@ class _PProfilePageState extends State<PProfilePage> {
             ),
           );
   }
-    Widget _buildSendFileStatus(UploadTask task) => StreamBuilder<TaskSnapshot>(
+
+  Widget _buildSendFileStatus(UploadTask task) => StreamBuilder<TaskSnapshot>(
         stream: task.snapshotEvents,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
@@ -506,7 +610,9 @@ class _PProfilePageState extends State<PProfilePage> {
                     ),
                   ),
                 ),
-                SizedBox(width: 5,),
+                SizedBox(
+                  width: 5,
+                ),
                 Text(
                   '$percentage%',
                   style: TextStyle(fontWeight: FontWeight.bold),

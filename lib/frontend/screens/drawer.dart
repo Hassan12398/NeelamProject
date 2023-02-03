@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:nelaamproject/backend/auth/authFunctions.dart';
 import 'package:nelaamproject/frontend/bid/bid_screen.dart';
 import 'package:nelaamproject/frontend/screens/bids.dart';
+import 'package:nelaamproject/frontend/screens/chat.dart';
 import 'package:nelaamproject/frontend/screens/welcome.dart';
 
 import '../../drawer/bidsoffers.dart';
@@ -100,7 +101,16 @@ class _DrawerPageState extends State<DrawerPage> {
                 child: ItemsConst(
                     geticon: Icons.notifications, label: "Notification"),
               ),
-              ItemsConst(geticon: Icons.message, label: "Messages"),
+              InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => chatPage(),
+                      ),
+                    );
+                  },
+                  child: ItemsConst(geticon: Icons.message, label: "Messages")),
               InkWell(
                 onTap: () {
                   Navigator.push(

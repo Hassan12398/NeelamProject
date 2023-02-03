@@ -111,7 +111,7 @@ class _SearchPageState extends State<SearchPage> {
                                     crossAxisCount: 2,
                                     crossAxisSpacing: 7,
                                     mainAxisSpacing: 18,
-                                    childAspectRatio: 0.85),
+                                    childAspectRatio: 0.84),
                             itemCount: snapshot.data!.docs.length,
                             itemBuilder: (context, index) {
                               var snap = snapshot.data!.docs[index].data();
@@ -321,22 +321,6 @@ class _SearchPageState extends State<SearchPage> {
                                                               fontSize: 13),
                                                         ),
                                                       ),
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                    .symmetric(
-                                                                horizontal: 5),
-                                                        child: Text(
-                                                          '${snap['rating']}.0⭐',
-                                                          style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                              color:
-                                                                  Colors.grey,
-                                                              fontSize: 13),
-                                                        ),
-                                                      ),
                                                     ],
                                                   ),
                                                 ),
@@ -382,7 +366,7 @@ class _SearchPageState extends State<SearchPage> {
                                   crossAxisCount: 2,
                                   crossAxisSpacing: 7,
                                   mainAxisSpacing: 18,
-                                  childAspectRatio: 0.85),
+                                  childAspectRatio: 0.84),
                           itemCount: snapshot.data!.docs.length,
                           itemBuilder: (context, index) {
                             var snap = snapshot.data!.docs[index].data();
@@ -586,19 +570,6 @@ class _SearchPageState extends State<SearchPage> {
                                                           horizontal: 5),
                                                       child: Text(
                                                         '$bid Bids',
-                                                        style: TextStyle(
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            color: Colors.grey,
-                                                            fontSize: 13),
-                                                      ),
-                                                    ),
-                                                    Padding(
-                                                      padding: const EdgeInsets
-                                                              .symmetric(
-                                                          horizontal: 5),
-                                                      child: Text(
-                                                        '${snap['rating']}.0⭐',
                                                         style: TextStyle(
                                                             fontWeight:
                                                                 FontWeight.bold,

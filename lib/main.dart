@@ -1,8 +1,10 @@
 // ignore_for_file: prefer_const_constructors, unused_import
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -11,11 +13,19 @@ import 'package:nelaamproject/drawer/sellingitem.dart';
 import 'package:nelaamproject/frontend/screens/mainbottombar.dart';
 import 'package:nelaamproject/frontend/screens/selling.dart';
 import 'package:nelaamproject/frontend/screens/welcome.dart';
+import 'package:nelaamproject/backend/notifications/function.dart';
 import 'package:permission_handler/permission_handler.dart';
+
+Future<void> backgroundhandler(RemoteMessage message) async {
+  print(message.data.toString());
+  print(message.notification!.title);
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+  FirebaseMessaging.onBackgroundMessage(
+      (message) => backgroundhandler(message));
+  LocalNotificationService.initialize();
   await Firebase.initializeApp(
           // options: FirebaseOptions(
           //     apiKey: "AIzaSyB4bbS4zXC8eX_YW9DZ8S6s69Hxau7muNk",

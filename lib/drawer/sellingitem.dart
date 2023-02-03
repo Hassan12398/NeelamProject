@@ -174,13 +174,31 @@ class _ItemsForSellConstState extends State<ItemsForSellConst> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Text(
-                      widget.productData["Product Name"],
+                      widget.productData["Product Name"].toString().length < 12
+                          ? widget.productData["Product Name"]
+                          : widget.productData["Product Name"]
+                              .toString()
+                              .replaceRange(
+                                  9,
+                                  widget.productData["Product Name"]
+                                      .toString()
+                                      .length,
+                                  '...'),
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                     Text(
-                      widget.productData["Categories"],
+                      widget.productData["Categories"].toString().length < 14
+                          ? widget.productData["Categories"]
+                          : widget.productData["Categories"]
+                              .toString()
+                              .replaceRange(
+                                  11,
+                                  widget.productData["Categories"]
+                                      .toString()
+                                      .length,
+                                  '...'),
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                       ),
@@ -203,19 +221,13 @@ class _ItemsForSellConstState extends State<ItemsForSellConst> {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    Text(
-                      "Rating : ${widget.productData["rating"]}",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
                   ],
                 ),
               ),
               // image
               Container(
                 height: 180.0,
-                width: 150.0,
+                width: MediaQuery.of(context).size.width - 210,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.only(
                       bottomRight: Radius.circular(4),

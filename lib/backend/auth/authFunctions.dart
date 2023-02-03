@@ -1,10 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:nelaamproject/Widgets/snackbar.dart';
+
 Color kPrimaryColor = Colors.lightBlue.shade900;
+
 class AuthFunction extends GetxController {
   static AuthFunction instance = Get.find();
 
@@ -37,20 +40,33 @@ class AuthFunction extends GetxController {
           .collection('users')
           .doc(cred.user!.uid)
           .set({
-            'username':username,
-            'password':password,
-            'email':email,
-            'profileUrl': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRhW0hzwECDKq0wfUqFADEJaNGESHQ8GRCJIg&usqp=CAU',
-            'posts':[],
-            'status':'unavailable',
-            'statusT':DateTime.now(),
-            'uid':cred.user!.uid,
-            'bid post':[],
-            'like posts':[],
-            'verify':false,
-            'rating':0,
-            'response':'good',
-          });
+        'username': username,
+        'password': password,
+        'email': email,
+        'profileUrl':
+            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRhW0hzwECDKq0wfUqFADEJaNGESHQ8GRCJIg&usqp=CAU',
+        'posts': [],
+        'status': 'unavailable',
+        'statusT': DateTime.now(),
+        'uid': cred.user!.uid,
+        'bid post': [],
+        'like posts': [],
+        '5 star': [],
+        '4 star': [],
+        '3 star': [],
+        '2 star': [],
+        '1 star': [],
+        'verify': false,
+        'rating': 0,
+        'response': 'good',
+      });
+      String? token = await FirebaseMessaging.instance.getToken();
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc(_auth.currentUser!.uid)
+          .update({
+        "token": token,
+      });
       // Get.to(homePgae(), transition: Transition.rightToLeft);
       if (password.isEmpty && username.isEmpty && email.isEmpty) {
         err = 'fields-error';
@@ -88,6 +104,13 @@ class AuthFunction extends GetxController {
     try {
       UserCredential userCredential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
+      String? token = await FirebaseMessaging.instance.getToken();
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc(_auth.currentUser!.uid)
+          .update({
+        "token": token,
+      });
       print("Login done");
       // Get.to(homePgae(), transition: Transition.rightToLeft);
 
@@ -156,19 +179,31 @@ class AuthFunction extends GetxController {
               .collection('users')
               .doc(user.uid)
               .set({
-                 'username':user.displayName,
+            'username': user.displayName,
             // 'password':password,
-            'email':user.email,
+            'email': user.email,
             'profileUrl': user.photoURL,
-            'posts':[],
-            'status':'unavailable',
-            'statusT':DateTime.now(),
-            'uid':user.uid,
-            'verify':false,
-            'rating':0,
-            'response':'good',
-              });
+            'posts': [],
+            'status': 'unavailable',
+            'statusT': DateTime.now(),
+            'uid': user.uid,
+            'verify': false,
+            'rating': 0,
+            '5 star': [],
+            '4 star': [],
+            '3 star': [],
+            '2 star': [],
+            '1 star': [],
+            'response': 'good',
+          });
         }
+        String? token = await FirebaseMessaging.instance.getToken();
+        await FirebaseFirestore.instance
+            .collection("users")
+            .doc(_auth.currentUser!.uid)
+            .update({
+          "token": token,
+        });
         res = true;
       }
     } on FirebaseAuthException catch (e) {

@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nelaamproject/frontend/screens/mainbottombar.dart';
+import 'package:nelaamproject/frontend/screens/resetPassword.dart';
 
 import '../../backend/auth/authFunctions.dart';
 import 'register.dart';
@@ -15,9 +16,9 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  TextEditingController emailc =TextEditingController();
-  TextEditingController passwordc =TextEditingController();
-   bool obsecure = true;
+  TextEditingController emailc = TextEditingController();
+  TextEditingController passwordc = TextEditingController();
+  bool obsecure = true;
   bool isloading = false;
 
   // Future login() async {
@@ -52,7 +53,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:Color.fromARGB(255, 30, 76, 106),
+      backgroundColor: Color.fromARGB(255, 30, 76, 106),
       // appbar
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -67,11 +68,13 @@ class _LoginPageState extends State<LoginPage> {
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [          
+          children: [
             // for logo
             Image.asset("images/nelam.png"),
             // fields + button
-            SizedBox(height: 30,),
+            SizedBox(
+              height: 30,
+            ),
             Container(
               child: Column(
                 children: [
@@ -103,12 +106,12 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                       ),
-                       error.isEmpty
-                      ? Container()
-                      : Text(error,
-                          style: TextStyle(
-                            color: Colors.red,
-                          )),
+                      error.isEmpty
+                          ? Container()
+                          : Text(error,
+                              style: TextStyle(
+                                color: Colors.red,
+                              )),
                       // password
                       SizedBox(height: 12.0),
                       Text(
@@ -129,18 +132,17 @@ class _LoginPageState extends State<LoginPage> {
                           decoration: InputDecoration(
                             isDense: true,
                             filled: true,
-                            
-                         suffixIcon:   GestureDetector(
-                                  onTap: _togglepassword,
-                                  child: obsecure
-                                      ? Icon(
-                                          Icons.visibility,
-                                          color: Colors.lightBlue.shade900,
-                                        )
-                                      : Icon(
-                                          Icons.visibility_off,
-                                          color: Colors.lightBlue.shade900,
-                                        )),
+                            suffixIcon: GestureDetector(
+                                onTap: _togglepassword,
+                                child: obsecure
+                                    ? Icon(
+                                        Icons.visibility,
+                                        color: Colors.lightBlue.shade900,
+                                      )
+                                    : Icon(
+                                        Icons.visibility_off,
+                                        color: Colors.lightBlue.shade900,
+                                      )),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12.0),
                             ),
@@ -148,50 +150,69 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                       ),
-                       Perror.isEmpty
-                      ? Container()
-                      : Text(Perror,
-                          style: TextStyle(
-                            color: Colors.red,
-                          )),
+                      Perror.isEmpty
+                          ? Container()
+                          : Text(Perror,
+                              style: TextStyle(
+                                color: Colors.red,
+                              )),
                     ],
+                  ),
+                  SizedBox(height: 16.0),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => ResetPassword(),
+                        ),
+                      );
+                    },
+                    child: Text(
+                      "RESET PASSWORD",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                   SizedBox(height: 24.0),
                   // button
                   GestureDetector(
-                    onTap: ()async{
-                       String result = await AuthFunction().loginUser(
-                                emailc.text, passwordc.text, context);
+                    onTap: () async {
+                      String result = await AuthFunction()
+                          .loginUser(emailc.text, passwordc.text, context);
 
-                            if (result == 'error-user') {
-                              setState(() {
-                                error = 'Email Not Found!';
-                                Perror = '';
-                              });
-                            } else if (result == 'error-pass') {
-                              setState(() {
-                                Perror = 'Wrong Password!';
-                                error = '';
-                              });
-                            } else if (result == 'fields-error') {
-                              error = "Email is Empty";
-                              Perror = "Password is Empty";
-                              setState(() {});
-                            }
-                            if (result == 'invalid-email') {
-                              setState(() {
-                                error = '';
-                                Perror = '';
-                                error = "Your Email Is Badly Formatted!";
-                              });
-                            }
-                            if (result == '') {
-                              setState(() {
-                                isloading = true;
-                              });
-                              await Future.delayed(Duration(milliseconds: 3000))
-                                  .then((value) => Get.to(MainBottomBar(),transition: Transition.rightToLeft));
-                            }
+                      if (result == 'error-user') {
+                        setState(() {
+                          error = 'Email Not Found!';
+                          Perror = '';
+                        });
+                      } else if (result == 'error-pass') {
+                        setState(() {
+                          Perror = 'Wrong Password!';
+                          error = '';
+                        });
+                      } else if (result == 'fields-error') {
+                        error = "Email is Empty";
+                        Perror = "Password is Empty";
+                        setState(() {});
+                      }
+                      if (result == 'invalid-email') {
+                        setState(() {
+                          error = '';
+                          Perror = '';
+                          error = "Your Email Is Badly Formatted!";
+                        });
+                      }
+                      if (result == '') {
+                        setState(() {
+                          isloading = true;
+                        });
+                        await Future.delayed(Duration(milliseconds: 3000)).then(
+                            (value) => Get.to(MainBottomBar(),
+                                transition: Transition.rightToLeft));
+                      }
                     },
                     child: Container(
                       height: 55.0,
@@ -208,27 +229,30 @@ class _LoginPageState extends State<LoginPage> {
                         borderRadius: BorderRadius.circular(20.0),
                       ),
                       child: Center(
-                        child: isloading==false? Text(
-              "LOGIN",
-              style: TextStyle(
-                color: Color.fromARGB(255, 26, 69, 145),
-                fontWeight: FontWeight.bold,
-                fontSize: 18.0,
-              ),
-            ):
-             CircularProgressIndicator(),
+                        child: isloading == false
+                            ? Text(
+                                "LOGIN",
+                                style: TextStyle(
+                                  color: Color.fromARGB(255, 26, 69, 145),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18.0,
+                                ),
+                              )
+                            : CircularProgressIndicator(),
                       ),
                     ),
                   ),
                 ],
               ),
-            ),        
-            SizedBox(height: 140,),  
+            ),
+            SizedBox(
+              height: 140,
+            ),
             Padding(
               padding: const EdgeInsets.only(bottom: 20.0),
               child: GestureDetector(
-                onTap: (){
-                   Get.to(RegisterPage(),transition: Transition.rightToLeft);
+                onTap: () {
+                  Get.to(RegisterPage(), transition: Transition.rightToLeft);
                 },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,

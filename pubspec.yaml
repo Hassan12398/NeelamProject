@@ -63,6 +63,10 @@ dependencies:
   audioplayers: ^1.0.1
   flutter_sound:
   permission_handler: ^10.2.0
+  firebase_messaging:
+  flutter_local_notifications:
+  http:
+  flutter_facebook_auth: ^5.0.7
 dev_dependencies:
   flutter_test:
     sdk: flutter

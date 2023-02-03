@@ -168,9 +168,12 @@ class _EditProductState extends State<EditProduct> {
                   ? CircularProgressIndicator()
                   : GestureDetector(
                       onTap: () async {
-                        setState(() {
-                          loading = true;
-                        });
+                        showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (context) => Center(
+                                  child: CircularProgressIndicator(),
+                                ));
                         await FirebaseFirestore.instance
                             .collection("Products")
                             .doc(postId)
@@ -181,7 +184,10 @@ class _EditProductState extends State<EditProduct> {
                           "Minimum Bid": productminbid.text,
                           "bid on": status,
                         }).then(
-                          (value) => Navigator.pop(context),
+                          (value) {
+                            Navigator.pop(context);
+                            Navigator.pop(context);
+                          },
                         );
                       },
                       child: Container(

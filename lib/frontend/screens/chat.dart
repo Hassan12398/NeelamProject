@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:nelaamproject/frontend/message/message.dart';
+import 'package:nelaamproject/frontend/screens/rating_screen.dart';
 
 class chatPage extends StatefulWidget {
   const chatPage({super.key});
@@ -16,6 +17,8 @@ class chatPage extends StatefulWidget {
 }
 
 class _chatPageState extends State<chatPage> {
+  String search = '';
+  bool show = false;
   @override
   Widget build(BuildContext context) {
     final now = DateTime.now();
@@ -60,6 +63,7 @@ class _chatPageState extends State<chatPage> {
             Padding(
               padding: const EdgeInsets.all(20.0),
               child: TextField(
+                // controller: search,
                 decoration: InputDecoration(
                   isDense: true,
                   fillColor: Color.fromARGB(255, 229, 223, 126),
@@ -77,156 +81,434 @@ class _chatPageState extends State<chatPage> {
                     borderRadius: BorderRadius.circular(12.0),
                   ),
                 ),
+                onChanged: (v) {
+                  if (v.isNotEmpty) {
+                    setState(() {
+                      show = true;
+                    });
+                  } else {
+                    setState(() {
+                      show = false;
+                    });
+                  }
+                  setState(() {
+                    search = v;
+                  });
+                },
               ),
             ),
-            StreamBuilder(
-                stream: FirebaseFirestore.instance
-                    .collection('users')
-                    .doc(FirebaseAuth.instance.currentUser!.uid)
-                    .collection('Chatrooms')
-                    .orderBy(
-                      'time',
-                      descending: true,
-                    )
-                    .snapshots(),
-                builder: (context,
-                    AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>>
-                        snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          height: 250,
-                        ),
-                        Center(child: CircularProgressIndicator()),
-                      ],
-                    );
-                  }
-                  return ListView.builder(
-                      physics: NeverScrollableScrollPhysics(),
-                      scrollDirection: Axis.vertical,
-                      dragStartBehavior: DragStartBehavior.start,
-                      keyboardDismissBehavior:
-                          ScrollViewKeyboardDismissBehavior.onDrag,
-                      itemCount: snapshot.data!.docs.length,
-                      shrinkWrap: true,
-                      itemBuilder: (context, index) {
-                        var snap = snapshot.data!.docs[index].data();
-                        // CollectionReference<Map<String, dynamic>> collection;
-                        return GestureDetector(
-                          onTap: () {
-                            Get.to(
-                                message_screen(
-                                  uid: snap['uid'],
-                                ),
-                                transition: Transition.rightToLeft);
-                          },
-                          child: Container(
-                            height: 80,
-                            width: double.infinity,
-                            margin: EdgeInsets.symmetric(horizontal: 15),
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: Colors.black,
-                                width: 3,
-                              ),
+            show == true
+                ? StreamBuilder(
+                    stream: FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(FirebaseAuth.instance.currentUser!.uid)
+                        .collection('Chatrooms')
+                        .where("username", isGreaterThanOrEqualTo: search)
+                        .snapshots(),
+                    builder: (context,
+                        AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>>
+                            snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              height: 250,
                             ),
-                            child: Row(
-                              children: [
-                                Container(
-                                  height: 80,
-                                  width: 80,
-                                  decoration: BoxDecoration(
-                                      color: Colors.lightBlue.shade900,
-                                      image: DecorationImage(
-                                          fit: BoxFit.cover,
-                                          image: NetworkImage(
-                                              snap['profileImage']))),
+                            Center(child: CircularProgressIndicator()),
+                          ],
+                        );
+                      }
+                      return ListView.builder(
+                          physics: NeverScrollableScrollPhysics(),
+                          scrollDirection: Axis.vertical,
+                          dragStartBehavior: DragStartBehavior.start,
+                          keyboardDismissBehavior:
+                              ScrollViewKeyboardDismissBehavior.onDrag,
+                          itemCount: snapshot.data!.docs.length,
+                          shrinkWrap: true,
+                          itemBuilder: (context, index) {
+                            var snap = snapshot.data!.docs[index].data();
+                            // CollectionReference<Map<String, dynamic>> collection;
+                            return GestureDetector(
+                              onTap: () {
+                                if (snap['lastMessage'] == 'bid') {
+                                  Get.to(
+                                      rating_screen(
+                                        uid: snap['uid'],
+                                      ),
+                                      transition: Transition.rightToLeft);
+                                } else {
+                                  Get.to(
+                                      message_screen(
+                                        uid: snap['uid'],
+                                      ),
+                                      transition: Transition.rightToLeft);
+                                }
+                              },
+                              child: Container(
+                                height: 80,
+                                width: double.infinity,
+                                margin: EdgeInsets.symmetric(horizontal: 15),
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: Colors.black,
+                                    width: 3,
+                                  ),
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 3),
-                                  child: Column(
-                                    children: [
-                                      Container(
-                                        width:
-                                            MediaQuery.of(context).size.width -
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      height: 80,
+                                      width: 80,
+                                      decoration: BoxDecoration(
+                                          color: Colors.lightBlue.shade900,
+                                          image: DecorationImage(
+                                              fit: BoxFit.cover,
+                                              image: NetworkImage(
+                                                  snap['profileImage']))),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 3),
+                                      child: Column(
+                                        children: [
+                                          Container(
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width -
                                                 135,
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text(
-                                              snap['username'],
-                                              textAlign: TextAlign.start,
-                                              style: TextStyle(
-                                                fontSize: 17,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                            Text(
-                                                dateToday(snap['time']
-                                                        .toDate())
-                                                    .toString(),
-                                                style: TextStyle(
-                                                    color:
-                                                        snap['lastMessage'] ==
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Text(
+                                                  snap['username'],
+                                                  textAlign: TextAlign.start,
+                                                  style: TextStyle(
+                                                    fontSize: 17,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                Text(
+                                                    dateToday(
+                                                            snap['time']
+                                                                .toDate())
+                                                        .toString(),
+                                                    style: TextStyle(
+                                                        color: snap['lastMessage'] ==
                                                                 'bid'
                                                             ? Color.fromARGB(
                                                                 255,
                                                                 30,
                                                                 76,
                                                                 106)
-                                                            : Colors.grey,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 13)),
-                                          ],
-                                        ),
-                                      ),
-                                      snap['lastMessage'] == 'bid'
-                                          ? Container(
-                                              height: 30,
-                                              width: MediaQuery.of(context)
-                                                      .size
-                                                      .width -
-                                                  138,
-                                              color: Colors.transparent,
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Text(
-                                                    '${snap['username']} Accepted your bid request!',
-                                                    textAlign: TextAlign.start,
-                                                    style: TextStyle(
-                                                      fontSize: 12,
-                                                      color: Colors.grey,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
+                                                            : snap['lastMessage'] ==
+                                                                    'buy now'
+                                                                ? Color
+                                                                    .fromARGB(
+                                                                        255,
+                                                                        30,
+                                                                        76,
+                                                                        106)
+                                                                : Colors.grey,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: 13)),
+                                              ],
+                                            ),
+                                          ),
+                                          snap['lastMessage'] == 'bid'
+                                              ? Container(
+                                                  height: 30,
+                                                  width: MediaQuery.of(context)
+                                                          .size
+                                                          .width -
+                                                      138,
+                                                  color: Colors.transparent,
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      Text(
+                                                        'I Accepted your bid request!',
+                                                        textAlign:
+                                                            TextAlign.start,
+                                                        style: TextStyle(
+                                                          fontSize: 12,
+                                                          color: Colors.grey,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                      CircleAvatar(
+                                                        radius: 10,
+                                                        backgroundColor:
+                                                            Color.fromARGB(255,
+                                                                30, 76, 106),
+                                                      )
+                                                    ],
                                                   ),
-                                                  CircleAvatar(
-                                                    radius: 10,
-                                                    backgroundColor:
-                                                        Color.fromARGB(
-                                                            255, 30, 76, 106),
-                                                  )
-                                                ],
-                                              ),
-                                            )
-                                          : Container(),
-                                    ],
-                                  ),
-                                )
-                              ],
+                                                )
+                                              : snap['lastMessage'] == 'buy now'
+                                                  ? Container(
+                                                      height: 30,
+                                                      width:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width -
+                                                              138,
+                                                      color: Colors.transparent,
+                                                      child: Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                        children: [
+                                                          Text(
+                                                            'I Wants to buy your product!',
+                                                            textAlign:
+                                                                TextAlign.start,
+                                                            style: TextStyle(
+                                                              fontSize: 12,
+                                                              color:
+                                                                  Colors.grey,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                            ),
+                                                          ),
+                                                          CircleAvatar(
+                                                            radius: 10,
+                                                            backgroundColor:
+                                                                Color.fromARGB(
+                                                                    255,
+                                                                    30,
+                                                                    76,
+                                                                    106),
+                                                          )
+                                                        ],
+                                                      ),
+                                                    )
+                                                  : Container(),
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            );
+                            ;
+                          });
+                    })
+                : StreamBuilder(
+                    stream: FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(FirebaseAuth.instance.currentUser!.uid)
+                        .collection('Chatrooms')
+                        .orderBy(
+                          'time',
+                          descending: true,
+                        )
+                        .snapshots(),
+                    builder: (context,
+                        AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>>
+                            snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              height: 250,
                             ),
-                          ),
+                            Center(child: CircularProgressIndicator()),
+                          ],
                         );
-                        ;
-                      });
-                })
+                      }
+                      return ListView.builder(
+                          physics: NeverScrollableScrollPhysics(),
+                          scrollDirection: Axis.vertical,
+                          dragStartBehavior: DragStartBehavior.start,
+                          keyboardDismissBehavior:
+                              ScrollViewKeyboardDismissBehavior.onDrag,
+                          itemCount: snapshot.data!.docs.length,
+                          shrinkWrap: true,
+                          itemBuilder: (context, index) {
+                            var snap = snapshot.data!.docs[index].data();
+                            // CollectionReference<Map<String, dynamic>> collection;
+                            return GestureDetector(
+                              onTap: () {
+                                if (snap['lastMessage'] == 'bid') {
+                                  Get.to(
+                                      rating_screen(
+                                        uid: snap['uid'],
+                                      ),
+                                      transition: Transition.rightToLeft);
+                                } else {
+                                  Get.to(
+                                      message_screen(
+                                        uid: snap['uid'],
+                                      ),
+                                      transition: Transition.rightToLeft);
+                                }
+                              },
+                              child: Container(
+                                height: 80,
+                                width: double.infinity,
+                                margin: EdgeInsets.symmetric(horizontal: 15),
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: Colors.black,
+                                    width: 3,
+                                  ),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      height: 80,
+                                      width: 80,
+                                      decoration: BoxDecoration(
+                                          color: Colors.lightBlue.shade900,
+                                          image: DecorationImage(
+                                              fit: BoxFit.cover,
+                                              image: NetworkImage(
+                                                  snap['profileImage']))),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 3),
+                                      child: Column(
+                                        children: [
+                                          Container(
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width -
+                                                135,
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Text(
+                                                  snap['username'],
+                                                  textAlign: TextAlign.start,
+                                                  style: TextStyle(
+                                                    fontSize: 17,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                Text(
+                                                    dateToday(
+                                                            snap['time']
+                                                                .toDate())
+                                                        .toString(),
+                                                    style: TextStyle(
+                                                        color: snap['lastMessage'] ==
+                                                                'bid'
+                                                            ? Color.fromARGB(
+                                                                255,
+                                                                30,
+                                                                76,
+                                                                106)
+                                                            : snap['lastMessage'] ==
+                                                                    'buy now'
+                                                                ? Color
+                                                                    .fromARGB(
+                                                                        255,
+                                                                        30,
+                                                                        76,
+                                                                        106)
+                                                                : Colors.grey,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: 13)),
+                                              ],
+                                            ),
+                                          ),
+                                          snap['lastMessage'] == 'bid'
+                                              ? Container(
+                                                  height: 30,
+                                                  width: MediaQuery.of(context)
+                                                          .size
+                                                          .width -
+                                                      138,
+                                                  color: Colors.transparent,
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      Text(
+                                                        'I Accepted your bid request!',
+                                                        textAlign:
+                                                            TextAlign.start,
+                                                        style: TextStyle(
+                                                          fontSize: 12,
+                                                          color: Colors.grey,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                      CircleAvatar(
+                                                        radius: 10,
+                                                        backgroundColor:
+                                                            Color.fromARGB(255,
+                                                                30, 76, 106),
+                                                      )
+                                                    ],
+                                                  ),
+                                                )
+                                              : snap['lastMessage'] == 'buy now'
+                                                  ? Container(
+                                                      height: 30,
+                                                      width:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width -
+                                                              138,
+                                                      color: Colors.transparent,
+                                                      child: Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                        children: [
+                                                          Text(
+                                                            'I want to buy your product!',
+                                                            textAlign: TextAlign
+                                                                .center,
+                                                            style: TextStyle(
+                                                              fontSize: 12,
+                                                              color:
+                                                                  Colors.grey,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                            ),
+                                                          ),
+                                                          CircleAvatar(
+                                                            radius: 10,
+                                                            backgroundColor:
+                                                                Color.fromARGB(
+                                                                    255,
+                                                                    30,
+                                                                    76,
+                                                                    106),
+                                                          )
+                                                        ],
+                                                      ),
+                                                    )
+                                                  : Container(),
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            );
+                            ;
+                          });
+                    })
           ],
         ),
       ),

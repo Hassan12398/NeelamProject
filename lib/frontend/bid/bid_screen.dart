@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:nelaamproject/backend/notifications/function.dart';
 import 'package:nelaamproject/widgets/snackbar.dart';
 import 'package:uuid/uuid.dart';
 
@@ -11,8 +12,10 @@ class bid_screen extends StatefulWidget {
   int price;
   int minBid;
   String postId;
+  String token;
   bid_screen(
       {super.key,
+      required this.token,
       required this.price,
       required this.minBid,
       required this.postId});
@@ -60,7 +63,7 @@ class _bid_screenState extends State<bid_screen> {
     return Scaffold(
       appBar: AppBar(
         iconTheme: IconThemeData(color: Colors.white),
-        backgroundColor:  Color.fromARGB(255, 30, 76, 106),
+        backgroundColor: Color.fromARGB(255, 30, 76, 106),
         title: Text(
           'Bid It',
           style: TextStyle(
@@ -426,13 +429,21 @@ class _bid_screenState extends State<bid_screen> {
                                                         });
                                                         await FirebaseFirestore
                                                             .instance
-                                                            .collection(
-                                                                'users')
-                                                            .doc(FirebaseAuth.instance.currentUser!.uid)
+                                                            .collection('users')
+                                                            .doc(FirebaseAuth
+                                                                .instance
+                                                                .currentUser!
+                                                                .uid)
                                                             .update({
                                                           "bid post": FieldValue
                                                               .arrayUnion(bid),
                                                         });
+                                                        LocalNotificationService
+                                                            .sendPushMessage(
+                                                          "${userData['username']} sends you a Bid offer on your product",
+                                                          "Bid Offer",
+                                                          widget.token,
+                                                        );
                                                       },
                                                       child: Container(
                                                         height: 43,

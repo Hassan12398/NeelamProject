@@ -79,7 +79,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
                   TopDealsConst(
                       title: "Consumer Electronics", image: "electronics"),
                   TopDealsConst(title: "Crafts", image: "crafts"),
-                  TopDealsConst(title: "Dolls and Bears", image: "bears"),
+                  TopDealsConst(title: "Dolls & Bears", image: "bears"),
                 ],
               ),
             ),
@@ -87,9 +87,9 @@ class _CategoriesPageState extends State<CategoriesPage> {
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
-                  TopDealsConst(title: "Home and Garden", image: "garden"),
+                  TopDealsConst(title: "Home & Garden", image: "garden"),
                   TopDealsConst(title: "Sporting Goods", image: "sports"),
-                  TopDealsConst(title: "Toys and Hobbies", image: "toys"),
+                  TopDealsConst(title: "Toys & Hobbies", image: "toys"),
                 ],
               ),
             ),
