@@ -131,7 +131,8 @@ class _PProfilePageState extends State<PProfilePage> {
         star4.length > star2.length &&
         star4.length > star5.length) {
       return 4.0;
-    } else if (star5.length > star3.length &&
+    }
+    if (star5.length > star3.length &&
         star5.length > star2.length &&
         star5.length > star4.length &&
         star5.length > star1.length) {
@@ -139,38 +140,43 @@ class _PProfilePageState extends State<PProfilePage> {
     } else {
       return 0.0;
     }
-    if (star1.length != 0) {
-      if (star1.length == star2.length &&
-          star1.length == star3.length &&
-          star1.length == star5.length &&
-          star1.length == star4.length) {
+    if (star1.length != 0 && star2.length != 0) {
+      if (star1.length == star2.length) {
         return 1.0;
       }
-    } else if (star2.length != 0) {
-      if (star2.length == star1.length &&
-          star2.length == star3.length &&
-          star2.length == star5.length &&
-          star2.length == star4.length) {
+    } else if (star2.length != 0 && star3.length != 0) {
+      if (star2.length == star3.length) {
         return 2.0;
       }
-    } else if (star3.length != 0) {
-      if (star3.length == star1.length &&
-          star3.length == star2.length &&
-          star3.length == star5.length &&
-          star3.length == star4.length) {
+    } else if (star3.length != 0 && star1.length != 0) {
+      if (star3.length == star1.length) {
         return 3.0;
       }
-    } else if (star4.length != 0) {
-      if (star4.length == star1.length &&
-          star4.length == star2.length &&
-          star4.length == star5.length &&
-          star4.length == star3.length) {
+    } else if (star4.length != 0 && star2.length != 0) {
+      if (star4.length == star2.length) {
         return 4.0;
-      } else if (star5.length != 0) {
-        if (star5.length == star1.length &&
-            star5.length == star2.length &&
-            star5.length == star4.length &&
-            star5.length == star3.length) {
+      } else if (star4.length != 0 && star3.length != 0) {
+        if (star4.length == star3.length) {
+          return 4.0;
+        }
+      } else if (star4.length != 0 && star1.length != 0) {
+        if (star4.length == star1.length) {
+          return 4.0;
+        }
+      } else if (star5.length != 0 && star2.length != 0) {
+        if (star5.length == star2.length) {
+          return 5.0;
+        }
+      } else if (star5.length != 0 && star4.length != 0) {
+        if (star5.length == star4.length) {
+          return 4.0;
+        }
+      } else if (star5.length != 0 && star3.length != 0) {
+        if (star5.length == star3.length) {
+          return 4.0;
+        }
+      } else if (star5.length != 0 && star1.length != 0) {
+        if (star5.length == star1.length) {
           return 5.0;
         }
       }
@@ -398,7 +404,7 @@ class _PProfilePageState extends State<PProfilePage> {
                                       getcolor: Colors.green,
                                     )
                                   : Container(),
-                              rating() == 3 || rating() == 2
+                              rating() == 3
                                   ? ProfileConst(
                                       res: "Neutral",
                                       getcolor: Colors.blue,

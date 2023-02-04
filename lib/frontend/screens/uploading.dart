@@ -463,9 +463,83 @@ class _UploadingPageState extends State<UploadingPage> {
                                 userData1['username'],
                               );
                               Get.back();
-                              // setState(() {
-                              //   uploading = false;
-                              // });
+                              setState(() {
+                                file == null;
+                                name.text = '';
+                                details.text = '';
+                                price.text = '';
+                                bid.text = '';
+                                file == null;
+                              });
+                              showDialog(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                        content: Container(
+                                            height: 180,
+                                            child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  CircleAvatar(
+                                                    radius: 28,
+                                                    backgroundColor:
+                                                        Colors.green,
+                                                    child: Icon(
+                                                      Icons.check,
+                                                      color: Colors.white,
+                                                      size: 50,
+                                                    ),
+                                                  ),
+                                                  SizedBox(
+                                                    height: 5,
+                                                  ),
+                                                  Text(
+                                                    'Your Product Successfully Uploaded!',
+                                                    textAlign: TextAlign.center,
+                                                    style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                  SizedBox(
+                                                    height: 5,
+                                                  ),
+                                                  GestureDetector(
+                                                    onTap: () {
+                                                      Get.back();
+                                                      // Get.back();
+                                                    },
+                                                    child: Container(
+                                                      height: 40,
+                                                      width: 120,
+                                                      decoration: BoxDecoration(
+                                                        color: Colors.blue,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8),
+                                                      ),
+                                                      child: Center(
+                                                        child: Text(
+                                                          'Dismiss',
+                                                          style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 17,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ])));
+                                    // setState(() {
+                                    //   uploading = false;
+                                    // });
+                                  });
                             }
                           },
                           child: Container(

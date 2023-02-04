@@ -240,6 +240,7 @@ class _BidConstState extends State<BidConst> {
                             onTap: () {
                               Get.to(
                                   bid_Show(
+                                    imageUrl: widget.url,
                                     bid: widget.bidL,
                                     product: widget.productname,
                                     uid: snap['uid'],

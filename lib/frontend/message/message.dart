@@ -176,7 +176,7 @@ class _message_screenState extends State<message_screen>
             .doc(ChatId)
             .collection('Chatrooms')
             .doc(uid)
-            .update({'time': DateTime.now()});
+            .update({'read': true, 'time': DateTime.now()});
       }
     } catch (e) {
       Showsnackbar(context, e.toString());
@@ -254,9 +254,11 @@ class _message_screenState extends State<message_screen>
           .doc(ChatId)
           .collection('Chatrooms')
           .doc(FirebaseAuth.instance.currentUser!.uid)
-          .update({'time': DateTime.now()});
+          .update({'read': true, 'time': DateTime.now()});
       // Get.back();
-      sending = false;
+      setState(() {
+        sending = false;
+      });
     } catch (e) {
       Get.snackbar('error', e.toString());
     }
@@ -331,7 +333,7 @@ class _message_screenState extends State<message_screen>
           .doc(ChatId)
           .collection('Chatrooms')
           .doc(uid)
-          .update({'time': DateTime.now()});
+          .update({'read': true, 'time': DateTime.now()});
 
       setState(() {
         sending = false;
@@ -356,9 +358,7 @@ class _message_screenState extends State<message_screen>
     TaskSnapshot taskSnapshot = await task!;
     final snapshot = task!.whenComplete(() {});
     String downloadUrl = await taskSnapshot.ref.getDownloadURL();
-    setState(() {
-      sending = false;
-    });
+
     return downloadUrl;
   }
 
@@ -367,9 +367,9 @@ class _message_screenState extends State<message_screen>
       sending = true;
     });
     SendImage(widget.uid, File(file!.path!));
-    setState(() {
-      sending = false;
-    });
+    // setState(() {
+    //   sending = false;
+    // });
   }
 
   SendVideoF(
@@ -443,7 +443,7 @@ class _message_screenState extends State<message_screen>
           .doc(ChatId)
           .collection('Chatrooms')
           .doc(uid)
-          .update({'time': DateTime.now()});
+          .update({'read': true, 'time': DateTime.now()});
       // Get.back();
       setState(() {
         sending = false;
@@ -834,6 +834,12 @@ class _message_screenState extends State<message_screen>
                                 height: 40,
                               );
                             }
+                            FirebaseFirestore.instance
+                                .collection('users')
+                                .doc(FirebaseAuth.instance.currentUser!.uid)
+                                .collection('Chatrooms')
+                                .doc(widget.uid)
+                                .update({'read': false});
                             var snap = snapshot.data!.docs[index].data();
                             return snap['type'] == 'text'
                                 ? snap['uid'] ==

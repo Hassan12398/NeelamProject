@@ -13,8 +13,12 @@ class bid_screen extends StatefulWidget {
   int minBid;
   String postId;
   String token;
+  String imageUrl;
+  String uid;
   bid_screen(
       {super.key,
+      required this.imageUrl,
+      required this.uid,
       required this.token,
       required this.price,
       required this.minBid,
@@ -411,6 +415,30 @@ class _bid_screenState extends State<bid_screen> {
                                                               .uid,
                                                           "username": userData[
                                                               'username'],
+                                                        });
+                                                        await FirebaseFirestore
+                                                            .instance
+                                                            .collection('users')
+                                                            .doc(widget.uid)
+                                                            .collection(
+                                                                'Notifications')
+                                                            .doc(id)
+                                                            .set({
+                                                          'product image':
+                                                              widget.imageUrl,
+                                                          'buyer name':
+                                                              userData[
+                                                                  'username'],
+                                                          'body':
+                                                              'send you a bid offer',
+                                                          'uid': FirebaseAuth
+                                                              .instance
+                                                              .currentUser!
+                                                              .uid,
+                                                          'profile': userData[
+                                                              'profileUrl'],
+                                                          'time':
+                                                              DateTime.now(),
                                                         });
                                                         List bid = [
                                                           FirebaseAuth.instance

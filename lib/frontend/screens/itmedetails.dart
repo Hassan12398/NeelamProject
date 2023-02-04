@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_unnecessary_containers
 
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -12,6 +14,7 @@ import 'package:nelaamproject/frontend/message/message.dart';
 import 'package:nelaamproject/frontend/screens/buynow_show.dart';
 import 'package:nelaamproject/backend/notifications/function.dart';
 import 'package:nelaamproject/widgets/snackbar.dart';
+import 'package:uuid/uuid.dart';
 
 import 'cart.dart';
 
@@ -111,6 +114,7 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
         'lastMessage': '',
         'username': name2,
         'profileImage': prof2,
+        'read': false,
         'time': DateTime.now(),
       });
       await FirebaseFirestore.instance
@@ -122,6 +126,7 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
         'uid': FirebaseAuth.instance.currentUser!.uid,
         'username': name1,
         'lastMessage': '',
+        'read': false,
         'profileImage': prof1,
         'time': DateTime.now(),
       });
@@ -532,6 +537,8 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                         } else {
                           Get.to(
                               bid_screen(
+                                uid: widget.uid,
+                                imageUrl: widget.imageUrl,
                                 token: userData['token'],
                                 postId: widget.postId,
                                 minBid: int.parse(widget.bid),
@@ -602,7 +609,7 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                                       height: 3,
                                     ),
                                     Text(
-                                      "Are you want to buy this item?",
+                                      "Proceed to Check out!",
                                       style: TextStyle(
                                         fontWeight: FontWeight.w600,
                                         fontSize: 20,
@@ -618,6 +625,14 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                                         // for chatting + deleting product
                                         InkWell(
                                           onTap: () async {
+                                            Get.back();
+                                            // showDialog(
+                                            //     context: context,
+                                            //     barrierDismissible: false,
+                                            //     builder: (context) => Center(
+                                            //           child:
+                                            //               CircularProgressIndicator(),
+                                            //         ));
                                             CreateProductChatRoom(
                                                 userData['uid'],
                                                 userData1['username'],
@@ -626,7 +641,7 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                                                 userData['profileUrl'],
                                                 widget.name,
                                                 context);
-                                            Navigator.pop(context);
+                                            // Navigator.pop(context);
                                             LocalNotificationService
                                                 .sendPushImage(
                                               "Request to buy",
@@ -634,32 +649,87 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                                               userData["token"],
                                               widget.imageUrl,
                                             );
+
+                                            if (widget.bidlength != 0) {
+                                              // await FirebaseFirestore.instance
+                                              //     .collection('Products')
+                                              //     .doc(widget.postId)
+                                              //     .collection('bids')
+                                              //     .snapshots()
+                                              //     .forEach((querySnapshot) {
+                                              //   for (QueryDocumentSnapshot docSnapshot
+                                              //       in querySnapshot.docs) {
+                                              //     docSnapshot.reference
+                                              //         .delete();
+                                              //   }
+                                              // });
+                                              for (var i = 0;
+                                                  i < widget.bidL.length;
+                                                  i++) {
+                                                await FirebaseFirestore.instance
+                                                    .collection('Products')
+                                                    .doc(widget.postId)
+                                                    .collection('bids')
+                                                    .doc(widget.bidL[i])
+                                                    .delete();
+                                              }
+                                            }
+                                            log('success noti');
+                                            // await FirebaseFirestore.instance
+                                            //     .collection("users")
+                                            //     .doc(widget.uid)
+                                            //     .update({
+                                            //   "posts": FieldValue.arrayRemove(
+                                            //       [widget.postId]),
+                                            // });
+                                            // Get.back();
+                                            log('success post remove');
+                                            String id = Uuid().v1();
+                                            await FirebaseFirestore.instance
+                                                .collection('users')
+                                                .doc(FirebaseAuth
+                                                    .instance.currentUser!.uid)
+                                                .collection('recent purchase')
+                                                .doc(id)
+                                                .set({
+                                              'product image': widget.imageUrl,
+                                              'product name': widget.name,
+                                              'price': widget.price,
+                                              'time': DateTime.now(),
+                                            });
+                                            await FirebaseFirestore.instance
+                                                .collection('users')
+                                                .doc(widget.uid)
+                                                .collection('Notifications')
+                                                .doc(id)
+                                                .set({
+                                              'product image': widget.imageUrl,
+                                              'buyer name':
+                                                  userData1['username'],
+                                              'body':
+                                                  'Wants to buy your product',
+                                              'uid': FirebaseAuth
+                                                  .instance.currentUser!.uid,
+                                              'profile':
+                                                  userData1['profileUrl'],
+                                              'time': DateTime.now(),
+                                            });
+                                            log('success recent');
                                             await FirebaseFirestore.instance
                                                 .collection("Products")
                                                 .doc(widget.postId)
-                                                .delete();
-                                            await FirebaseFirestore.instance
-                                                .collection('Products')
-                                                .doc(widget.postId)
-                                                .collection('bids')
-                                                .snapshots()
-                                                .forEach((querySnapshot) {
-                                              for (QueryDocumentSnapshot docSnapshot
-                                                  in querySnapshot.docs) {
-                                                docSnapshot.reference.delete();
-                                              }
+                                                .delete()
+                                                .then((value) {
+                                              Get.back();
+                                              Get.back();
                                             });
-                                            await FirebaseFirestore.instance
-                                                .collection("users")
-                                                .doc(widget.uid)
-                                                .update({
-                                              "posts": FieldValue.arrayRemove(
-                                                  [widget.postId]),
-                                            });
-                                            Get.back();
+                                            Navigator.pop(context);
+                                            log('success delete');
+                                            // Get.back();
+                                            // Get.back();
                                             Showsnackbar(
                                               context,
-                                              'Your chatroom is ready',
+                                              'Your message sent to Seller',
                                             );
                                             print("Task Complete");
                                           },

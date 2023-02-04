@@ -4,6 +4,7 @@ import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:nelaamproject/frontend/screens/chat.dart';
 import 'package:nelaamproject/backend/notifications/function.dart';
@@ -53,6 +54,16 @@ class _MainBottomBarState extends State<MainBottomBar> {
           print(message.notification!.body);
           print("message.data11 ${message.data}");
           LocalNotificationService.createanddisplaynotification(message);
+          // Get.snackbar(
+          //   message.notification!.title!,
+          //   message.notification!.body!,
+          //   backgroundColor: Color.fromARGB(255, 30, 76, 106),
+          //   colorText: Colors.white,
+          //   borderRadius: 9,
+          //   borderWidth: 1,
+          //   borderColor: Colors.white,
+          //   margin: EdgeInsets.symmetric(vertical: 15, horizontal: 14),
+          // );
         }
       },
     );

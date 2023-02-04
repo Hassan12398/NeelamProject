@@ -119,6 +119,25 @@ class _chatPageState extends State<chatPage> {
                           ],
                         );
                       }
+                      if (snapshot.data!.docs.length == 0) {
+                        return Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              height: 300,
+                            ),
+                            Center(
+                              child: Text(
+                                'There is no message in Inbox',
+                                style: TextStyle(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
                       return ListView.builder(
                           physics: NeverScrollableScrollPhysics(),
                           scrollDirection: Axis.vertical,
@@ -192,9 +211,8 @@ class _chatPageState extends State<chatPage> {
                                                   ),
                                                 ),
                                                 Text(
-                                                    dateToday(
-                                                            snap['time']
-                                                                .toDate())
+                                                    dateToday(snap['time']
+                                                            .toDate())
                                                         .toString(),
                                                     style: TextStyle(
                                                         color: snap['lastMessage'] ==
@@ -206,13 +224,21 @@ class _chatPageState extends State<chatPage> {
                                                                 106)
                                                             : snap['lastMessage'] ==
                                                                     'buy now'
-                                                                ? Color
-                                                                    .fromARGB(
-                                                                        255,
-                                                                        30,
-                                                                        76,
-                                                                        106)
-                                                                : Colors.grey,
+                                                                ? Color.fromARGB(
+                                                                    255,
+                                                                    30,
+                                                                    76,
+                                                                    106)
+                                                                : snap['read'] ==
+                                                                        true
+                                                                    ? Color
+                                                                        .fromARGB(
+                                                                            255,
+                                                                            30,
+                                                                            76,
+                                                                            106)
+                                                                    : Colors
+                                                                        .grey,
                                                         fontWeight:
                                                             FontWeight.bold,
                                                         fontSize: 13)),
@@ -291,7 +317,49 @@ class _chatPageState extends State<chatPage> {
                                                         ],
                                                       ),
                                                     )
-                                                  : Container(),
+                                                  : snap['read'] == true
+                                                      ? Container(
+                                                          height: 30,
+                                                          width: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width -
+                                                              138,
+                                                          color: Colors
+                                                              .transparent,
+                                                          child: Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .spaceBetween,
+                                                            children: [
+                                                              Text(
+                                                                'you have some unread messages!',
+                                                                textAlign:
+                                                                    TextAlign
+                                                                        .center,
+                                                                style:
+                                                                    TextStyle(
+                                                                  fontSize: 12,
+                                                                  color: Colors
+                                                                      .grey,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                ),
+                                                              ),
+                                                              CircleAvatar(
+                                                                radius: 10,
+                                                                backgroundColor:
+                                                                    Color.fromARGB(
+                                                                        255,
+                                                                        30,
+                                                                        76,
+                                                                        106),
+                                                              )
+                                                            ],
+                                                          ),
+                                                        )
+                                                      : Container(),
                                         ],
                                       ),
                                     )
@@ -323,6 +391,25 @@ class _chatPageState extends State<chatPage> {
                               height: 250,
                             ),
                             Center(child: CircularProgressIndicator()),
+                          ],
+                        );
+                      }
+                      if (snapshot.data!.docs.length == 0) {
+                        return Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              height: 200,
+                            ),
+                            Center(
+                              child: Text(
+                                'There is no message in Inbox',
+                                style: TextStyle(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
                           ],
                         );
                       }
@@ -399,9 +486,8 @@ class _chatPageState extends State<chatPage> {
                                                   ),
                                                 ),
                                                 Text(
-                                                    dateToday(
-                                                            snap['time']
-                                                                .toDate())
+                                                    dateToday(snap['time']
+                                                            .toDate())
                                                         .toString(),
                                                     style: TextStyle(
                                                         color: snap['lastMessage'] ==
@@ -413,13 +499,21 @@ class _chatPageState extends State<chatPage> {
                                                                 106)
                                                             : snap['lastMessage'] ==
                                                                     'buy now'
-                                                                ? Color
-                                                                    .fromARGB(
-                                                                        255,
-                                                                        30,
-                                                                        76,
-                                                                        106)
-                                                                : Colors.grey,
+                                                                ? Color.fromARGB(
+                                                                    255,
+                                                                    30,
+                                                                    76,
+                                                                    106)
+                                                                : snap['read'] ==
+                                                                        true
+                                                                    ? Color
+                                                                        .fromARGB(
+                                                                            255,
+                                                                            30,
+                                                                            76,
+                                                                            106)
+                                                                    : Colors
+                                                                        .grey,
                                                         fontWeight:
                                                             FontWeight.bold,
                                                         fontSize: 13)),
@@ -498,7 +592,49 @@ class _chatPageState extends State<chatPage> {
                                                         ],
                                                       ),
                                                     )
-                                                  : Container(),
+                                                  : snap['read'] == true
+                                                      ? Container(
+                                                          height: 30,
+                                                          width: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width -
+                                                              138,
+                                                          color: Colors
+                                                              .transparent,
+                                                          child: Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .spaceBetween,
+                                                            children: [
+                                                              Text(
+                                                                'you have some unread messages!',
+                                                                textAlign:
+                                                                    TextAlign
+                                                                        .center,
+                                                                style:
+                                                                    TextStyle(
+                                                                  fontSize: 12,
+                                                                  color: Colors
+                                                                      .grey,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                ),
+                                                              ),
+                                                              CircleAvatar(
+                                                                radius: 10,
+                                                                backgroundColor:
+                                                                    Color.fromARGB(
+                                                                        255,
+                                                                        30,
+                                                                        76,
+                                                                        106),
+                                                              )
+                                                            ],
+                                                          ),
+                                                        )
+                                                      : Container(),
                                         ],
                                       ),
                                     )

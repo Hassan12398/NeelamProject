@@ -63,7 +63,7 @@ class MyApp extends StatelessWidget {
       statusBarBrightness: Brightness.dark,
     ));
     return GetMaterialApp(
-      title: 'Flutter Demo',
+      title: 'Neelam Hub',
       debugShowCheckedModeBanner: false,
       // theme: ThemeData(
       //   // This is the theme of your application.
@@ -94,7 +94,7 @@ class MyApp extends StatelessWidget {
           error: Colors.red,
         ),
       ),
-      scrollBehavior: const CupertinoScrollBehavior(),
+      // scrollBehavior: const CupertinoScrollBehavior(),
       home: StreamBuilder(
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (context, snapshot) {

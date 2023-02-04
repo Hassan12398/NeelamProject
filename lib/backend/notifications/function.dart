@@ -140,7 +140,7 @@ class LocalNotificationService {
           "flutterNotificationchannel",
           importance: Importance.max,
           priority: Priority.high,
-          color: Colors.blue,
+          // color: Colors.blue,
           colorized: true,
         ),
       );

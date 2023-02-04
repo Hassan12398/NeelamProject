@@ -17,7 +17,7 @@ class _SavedPageState extends State<SavedPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 30, 76, 106),
+      // backgroundColor: Color.fromARGB(255, 30, 76, 106),
       // appbar
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 30, 76, 106),
@@ -53,7 +53,7 @@ class _SavedPageState extends State<SavedPage> {
                 style: TextStyle(
                   fontSize: 22.0,
                   fontWeight: FontWeight.w500,
-                  color: Colors.white,
+                  // color: Colors.white,
                 ),
               ),
             ),
@@ -66,10 +66,36 @@ class _SavedPageState extends State<SavedPage> {
               builder: ((context,
                   AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(
-                      child: CircularProgressIndicator(
-                    color: Colors.white,
-                  ));
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        height: 300,
+                      ),
+                      Center(
+                          child: CircularProgressIndicator(
+                        color: Colors.white,
+                      )),
+                    ],
+                  );
+                } else if (snapshot.data!.docs.length == 0) {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        height: 300,
+                      ),
+                      Center(
+                        child: Text(
+                          'You haven\'t Saved any Product',
+                          style: TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
                 } else {
                   return Container(
                     height: MediaQuery.of(context).size.height,
@@ -128,6 +154,14 @@ class SavedConst extends StatelessWidget {
           height: 200.0,
           decoration: BoxDecoration(
             color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey,
+                offset: Offset(3, 4),
+                blurRadius: 8,
+                spreadRadius: 1,
+              )
+            ],
             borderRadius: BorderRadius.circular(12.0),
           ),
           child: Row(
@@ -182,9 +216,11 @@ class SavedConst extends StatelessWidget {
               // image
               Container(
                 height: 200.0,
-                width: 200.0,
+                width: MediaQuery.of(context).size.width - 200,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12.0),
+                  borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(12),
+                      bottomRight: Radius.circular(12)),
                   image: DecorationImage(
                     fit: BoxFit.fill,
                     image: NetworkImage(

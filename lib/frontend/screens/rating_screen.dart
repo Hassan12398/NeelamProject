@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
+import 'package:nelaamproject/backend/notifications/function.dart';
 import 'package:nelaamproject/frontend/message/message.dart';
 
 class rating_screen extends StatefulWidget {
@@ -18,11 +19,13 @@ class rating_screen extends StatefulWidget {
 
 class _rating_screenState extends State<rating_screen> {
   var userData = {};
+  var userData1 = {};
   bool isLoading = false;
   @override
   void initState() {
     super.initState();
     getData();
+    getData1();
   }
 
   getData() async {
@@ -37,6 +40,25 @@ class _rating_screenState extends State<rating_screen> {
 
       setState(() {
         userData = Usersnap.data()!;
+      });
+    } catch (e) {}
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  getData1() async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      var Usersnap = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .get();
+
+      setState(() {
+        userData1 = Usersnap.data()!;
       });
     } catch (e) {}
     setState(() {
@@ -190,6 +212,10 @@ class _rating_screenState extends State<rating_screen> {
                                   .update({
                                 'lastMessage': '',
                               });
+                              LocalNotificationService.sendPushMessage(
+                                  '${userData1['username']} gave you $rate star rating',
+                                  'Rating',
+                                  userData['token']);
                               Get.back();
                               Get.to(message_screen(uid: widget.uid),
                                   transition: Transition.rightToLeft);

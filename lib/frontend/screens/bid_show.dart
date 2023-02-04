@@ -11,11 +11,13 @@ class bid_Show extends StatefulWidget {
   String product;
   String uid;
   List bid;
+  String imageUrl;
   bid_Show(
       {super.key,
       required this.postId,
       required this.bid,
       required this.uid,
+      required this.imageUrl,
       required this.product});
 
   @override
@@ -83,6 +85,7 @@ class _bid_ShowState extends State<bid_Show> {
           .set({
         'uid': uid,
         'lastMessage': '',
+        'read': false,
         'username': name2,
         'profileImage': prof2,
         'time': DateTime.now(),
@@ -95,6 +98,7 @@ class _bid_ShowState extends State<bid_Show> {
           .set({
         'uid': FirebaseAuth.instance.currentUser!.uid,
         'username': name1,
+        'read': false,
         'lastMessage': '',
         'profileImage': prof1,
         'time': DateTime.now(),
@@ -288,6 +292,21 @@ class _bid_ShowState extends State<bid_Show> {
                                         .update({
                                       "posts": FieldValue.arrayRemove(
                                           [widget.postId]),
+                                    });
+                                    String id = Uuid().v1();
+                                    await FirebaseFirestore.instance
+                                        .collection('users')
+                                        .doc(widget.uid)
+                                        .collection('Notifications')
+                                        .doc(id)
+                                        .set({
+                                      'product image': widget.imageUrl,
+                                      'buyer name': userData1['username'],
+                                      'body': 'I accepted you bid offer',
+                                      'uid': FirebaseAuth
+                                          .instance.currentUser!.uid,
+                                      'profile': userData1['profileUrl'],
+                                      'time': DateTime.now(),
                                     });
                                     await FirebaseFirestore.instance
                                         .collection("Products")

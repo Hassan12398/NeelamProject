@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:get/get.dart';
 import 'package:nelaamproject/frontend/screens/editProduct.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
@@ -60,6 +61,26 @@ class _SellingItemPageState extends State<SellingItemPage> {
                       child: CircularProgressIndicator(
                     color: Colors.white,
                   ));
+                }
+                if (snapshot.data!.docs.length == 0) {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        height: 300,
+                      ),
+                      Center(
+                        child: Text(
+                          'You haven\'t Upload any Product',
+                          style: TextStyle(
+                            fontSize: 17,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
                 } else {
                   return Container(
                     height: MediaQuery.of(context).size.height,
@@ -104,20 +125,24 @@ class _ItemsForSellConstState extends State<ItemsForSellConst> {
               backgroundColor: Colors.red,
               onPressed: ((context) {
                 Alert(
+                  closeFunction: () {
+                    Get.back();
+                  },
+                  closeIcon: Icon(Icons.close),
                   context: context,
-                  title: "Are you sure to delete this post ?",
+                  title: "Are you sure to delete this post?",
                   desc:
                       "This post will be delete permanently and you cannot restore it. Agree?",
                   buttons: [
                     DialogButton(
                       child: Text(
-                        "Cancle",
+                        "Cancel",
                         style: TextStyle(
                           color: Colors.white,
                         ),
                       ),
                       onPressed: () {
-                        Navigator.pop(context);
+                        Get.back();
                       },
                       color: Colors.blue,
                     ),
@@ -134,8 +159,10 @@ class _ItemsForSellConstState extends State<ItemsForSellConst> {
                             .doc(widget.productData["postId"])
                             .delete()
                             .then(
-                              (value) => Navigator.pop(context),
-                            );
+                          (value) {
+                            Get.back();
+                          },
+                        );
                       },
                       color: Colors.red,
                     ),
@@ -174,31 +201,13 @@ class _ItemsForSellConstState extends State<ItemsForSellConst> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Text(
-                      widget.productData["Product Name"].toString().length < 12
-                          ? widget.productData["Product Name"]
-                          : widget.productData["Product Name"]
-                              .toString()
-                              .replaceRange(
-                                  9,
-                                  widget.productData["Product Name"]
-                                      .toString()
-                                      .length,
-                                  '...'),
+                      'Title: ${widget.productData["Product Name"].toString().length < 8 ? widget.productData["Product Name"] : widget.productData["Product Name"].toString().replaceRange(6, widget.productData["Product Name"].toString().length, '...')}',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                     Text(
-                      widget.productData["Categories"].toString().length < 14
-                          ? widget.productData["Categories"]
-                          : widget.productData["Categories"]
-                              .toString()
-                              .replaceRange(
-                                  11,
-                                  widget.productData["Categories"]
-                                      .toString()
-                                      .length,
-                                  '...'),
+                      'Category: ${widget.productData["Categories"].toString().length < 7 ? widget.productData["Categories"] : widget.productData["Categories"].toString().replaceRange(5, widget.productData["Categories"].toString().length, '...')}',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                       ),

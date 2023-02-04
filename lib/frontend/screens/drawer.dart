@@ -80,7 +80,7 @@ class _DrawerPageState extends State<DrawerPage> {
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         color: Colors.white,
-                        fontSize: 24.0,
+                        fontSize: 20.0,
                       ),
                     ),
                     SizedBox(),

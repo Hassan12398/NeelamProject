@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:nelaamproject/drawer/categories.dart';
 import 'package:nelaamproject/frontend/screens/search.dart';
 
 import 'categoryDetails.dart';
@@ -142,7 +143,7 @@ class _SellingPageState extends State<SellingPage> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  "What are you looking for ?",
+                                  "What are you looking for?",
                                   style: TextStyle(
                                     color: Colors.black,
                                   ),
@@ -162,7 +163,7 @@ class _SellingPageState extends State<SellingPage> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Text(
-                "Top Deals",
+                "Categories",
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 24.0,
@@ -174,9 +175,19 @@ class _SellingPageState extends State<SellingPage> {
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
-                  TopDealsConst(title: "Books", image: "books"),
-                  TopDealsConst(title: "Clothing, Shoes...", image: "clothing"),
-                  TopDealsConst(title: "Collectibles", image: "collectibles"),
+                  TopDealsConst1(title: "Antiques", image: "antiques"),
+                  TopDealsConst1(title: "Books", image: "books"),
+                  TopDealsConst1(
+                      title: "Clothing, Shoes & Accessories",
+                      image: "clothing"),
+                  TopDealsConst1(title: "Collectibles", image: "collectibles"),
+                  TopDealsConst1(title: "Home & Garden", image: "garden"),
+                  TopDealsConst1(title: "Sporting Goods", image: "sports"),
+                  TopDealsConst1(title: "Toys & Hobbies", image: "toys"),
+                  TopDealsConst1(
+                      title: "Consumer Electronics", image: "electronics"),
+                  TopDealsConst1(title: "Crafts", image: "crafts"),
+                  TopDealsConst1(title: "Dolls & Bears", image: "bears"),
                 ],
               ),
             ),
@@ -462,6 +473,9 @@ class _SellingPageState extends State<SellingPage> {
                                     }));
                           });
                     }),
+            SizedBox(
+              height: 10,
+            ),
             // trends items
             // GridView.builder(
             //   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
